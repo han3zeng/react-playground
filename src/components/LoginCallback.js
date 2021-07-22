@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useContext, memo } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
 import config from '../config';
+import { AuthenticationContext } from '../contexts';
+import constants from '../constants';
 const { authServerOrigin, githubClientId, redirectUrl } = config;
+
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -9,15 +12,21 @@ function useQuery() {
 
 function LoginCallback() {
   const query = useQuery();
+  const history = useHistory();
+  const authentication = useContext(AuthenticationContext);
   useEffect(() => {
     let stateObject = {}
     const code = query.get('code')
     try {
-      stateObject = JSON.parse(query.get('state'))
+      stateObject = JSON.parse(decodeURIComponent(query.get('state')))
     } catch (e) {
 
     }
-    const { randomString, service } = stateObject;
+    const { csrfKey, service } = stateObject;
+    if (csrfKey !== sessionStorage.getItem(constants.CSRF_KEY)) {
+      history.push("/login?errorType=inconsistentState");
+      return;
+    }
     if (service === 'github') {
       const options = {
         method: 'POST',
@@ -34,18 +43,24 @@ function LoginCallback() {
           redirectUri: redirectUrl
         }),
       }
-      fetch(`${authServerOrigin}/login/oauth/github/access_token`, options)
-        .then(() => {
-          console.log('result')
+      fetch(`${authServerOrigin}/auth/github`, options)
+        .then((response) => {
+          response.json()
+            .then((data) => {
+              localStorage.setItem('githubAccessToken: ', JSON.stringify(data))
+              authentication.toggleAuthenticated(true);
+              sessionStorage.removeItem(constants.CSRF_KEY)
+              history.push('/dashboard');
+            })
         })
         .catch(() => {
           console.log('error')
         })
     }
-  })
+  }, [])
   return (
     <div>this is processing</div>
   )
 }
 
-export default LoginCallback;
+export default memo(LoginCallback);

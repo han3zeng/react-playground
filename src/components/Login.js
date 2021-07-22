@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 import config from '../config';
+import constants from '../constants';
+
 
 const Container = styled.div`
   margin: 50px auto;
   border: 1px solid black;
-  width: 500px;
+  width: 300px;
   height: 500px;
   position: relative;
   display: flex;
@@ -18,6 +20,7 @@ const Container = styled.div`
     color: black;
     text-decoration: none;
   }
+  border-radius: 3px;
 `;
 
 const GithubButton = styled.a`
@@ -28,35 +31,55 @@ const GithubButton = styled.a`
   right: 0;
   cursor: pointer;
   font-size: 26px;
-  width: 90%;
+  width: 85%;
   text-align: center;
+  border-radius: 3px;
 `;
 
 const GITHUB_AUTH_URL = 'https://github.com/login/oauth/authorize';
 
-function Login() {
-
-  const randomString = uuidv4();
-  const state = {
-    service: 'github',
-    randomString: randomString,
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: null,
+    }
+    this.csrfKey = null;
+    this.onClickHandler = this._onClickHandler.bind(this);
   }
-  sessionStorage.setItem('randomString', randomString)
-  const params = new URLSearchParams({
-    client_id: config.githubClientId,
-    redirect_uri: config.redirectUrl,
-    scope: 'read:user user:email',
-    state: JSON.stringify(state)
-  });
-  return (
-    <Container>
+
+  _onClickHandler() {
+    if (!window) return;
+    const state = {
+      service: 'github',
+      csrfKey: this.csrfKey,
+    }
+    const params = new URLSearchParams({
+      client_id: config.githubClientId,
+      redirect_uri: config.redirectUrl,
+      scope: 'read:user user:email',
+      state: encodeURIComponent(JSON.stringify(state))
+    });
+    sessionStorage.setItem(constants.CSRF_KEY, this.csrfKey)
+    window.location.href = `${GITHUB_AUTH_URL}?${params}`
+  }
+
+  componentDidMount() {
+    this.csrfKey = uuidv4();
+  }
+
+  render () {
+
+    return (
+      <Container>
         <GithubButton
-          href={`${GITHUB_AUTH_URL}?${params}`}
+          onClick={this.onClickHandler}
         >
           Github Login
         </GithubButton>
-    </Container>
-  )
+      </Container>
+    )
+  }
 }
 
 export default Login;
