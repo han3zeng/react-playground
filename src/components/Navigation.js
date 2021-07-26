@@ -7,9 +7,15 @@ const Container = styled.div`
   font-size:  30px;
   padding: 10px 5px;
   box-shadow: 0 3px 3px #E9E9E9;
+  box-sizing: border-box;
 `;
 
 const Nav = styled.nav`
+  display: flex;
+  justify-content: space-between;
+`
+
+const LeftDivision = styled.div`
   > a:not(:last-child) {
     margin-right: 20px;
   }
@@ -19,9 +25,11 @@ function Navigation () {
   return (
     <Container>
       <Nav>
-        <Link to="/">Home</Link>
+        <LeftDivision>
+          <Link to="/">Home</Link>
+          <Link to="/dashboard">Dashboard</Link>
+        </LeftDivision>
         <Link to="/login">Login</Link>
-        <Link to="/dashboard">Dashboard</Link>
       </Nav>
     </Container>
   );

@@ -3,7 +3,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import config from '../config';
 import { AuthenticationContext } from '../contexts';
 import constants from '../constants';
-const { authServerOrigin, githubClientId, redirectUrl } = config;
+const { authServerOrigin, resourceServerOrigin, githubClientId, redirectUrl } = config;
 
 
 function useQuery() {
@@ -47,10 +47,29 @@ function LoginCallback() {
         .then((response) => {
           response.json()
             .then((data) => {
-              localStorage.setItem('githubAccessToken: ', JSON.stringify(data))
-              authentication.toggleAuthenticated(true);
-              sessionStorage.removeItem(constants.CSRF_KEY)
-              history.push('/dashboard');
+              const { accessToken } = data;
+              fetch(`${resourceServerOrigin}/user/login`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${accessToken}`
+                },
+                referrerPolicy: 'no-referrer',
+                credentials: 'include'
+              })
+                .then((response) => {
+                  response.json()
+                    .then((userProfile) => {
+                      localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                      authentication.toggleAuthenticated(true);
+                      sessionStorage.removeItem(constants.CSRF_KEY)
+                      history.push('/dashboard');
+                    })
+                })
+                .catch(() => {
+                  console.log('error')
+                })
             })
         })
         .catch(() => {

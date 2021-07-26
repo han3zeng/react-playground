@@ -88,6 +88,10 @@ class App extends React.Component {
     })
   }
 
+  componentDidMount() {
+    
+  }
+
   render() {
     return (
       <ThemeProvider theme={theme}>
