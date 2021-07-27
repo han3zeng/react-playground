@@ -5,10 +5,14 @@ import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import Navigation from "./components/Navigation";
 import Layout from "./components/Layout";
-import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
+import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { breakpoints } from "./config";
-import { AuthenticationContext } from './contexts'
+import { AuthenticationContext } from './contexts';
+import constants from './constants';
+import config from './config';
+const { resourceServerOrigin } = config;
+
 
 const theme = {
   buttonColor: "#326891",
@@ -17,7 +21,7 @@ const theme = {
   headerColor: "#121212",
   contentColor: "#333333",
   captionColor: "#666666",
-  fontFamily: 'georgia,"times new roman", times, serif'
+  fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji'
 };
 
 const GlobalStyle = createGlobalStyle`
@@ -26,8 +30,11 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    margin: 0;
+    background-color: var(--color-bg-canvas);
+    color: var(--color-text-primary);
     font-family: ${props => props.theme.fontFamily};
+    font-size: 14px;
+    line-height: 1.5;
   }
 
   p {
@@ -77,7 +84,7 @@ class App extends React.Component {
     super(props);
     this.toggleAuthenticated = this._toggleAuthenticated.bind(this);
     this.state = {
-      authenticated: false,
+      authenticated: document ? !!localStorage.getItem(constants.USER_PRPFILE) : false,
       toggleAuthenticated: this.toggleAuthenticated
     }
   }
@@ -85,14 +92,27 @@ class App extends React.Component {
   _toggleAuthenticated (value) {
     this.setState({
       authenticated: value,
+    }, () => {
+      if (!value) {
+        localStorage.removeItem(constants.USER_PRPFILE);
+        fetch(`${resourceServerOrigin}/user/signout`, {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          referrerPolicy: 'no-referrer',
+          credentials: 'include'
+        })
+      }
     })
   }
 
   componentDidMount() {
-    
   }
 
   render() {
+    const { authenticated } = this.state;
     return (
       <ThemeProvider theme={theme}>
         <Router>
@@ -100,17 +120,17 @@ class App extends React.Component {
             <Navigation />
             <Layout>
               <Switch>
+                <Route exact path="/">
+                  <Home />
+                </Route>
                 <Route path="/login">
-                  <Login />
+                 { authenticated ? <Redirect to='/dashboard' />  : <Login /> }
                 </Route>
                 <Route path="/login-callback">
                   <LoginCallback />
                 </Route>
                 <Route path="/dashboard">
-                  <Dashboard />
-                </Route>
-                <Route path="/">
-                  <Home />
+                  { authenticated ? <Dashboard />  : <Redirect to='/' />}
                 </Route>
               </Switch>
             </Layout>

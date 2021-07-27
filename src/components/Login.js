@@ -75,7 +75,7 @@ class Login extends Component {
         <GithubButton
           onClick={this.onClickHandler}
         >
-          Github Login
+          Github Sign in
         </GithubButton>
       </Container>
     )

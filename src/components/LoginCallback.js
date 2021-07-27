@@ -3,8 +3,29 @@ import { useLocation, useHistory } from 'react-router-dom';
 import config from '../config';
 import { AuthenticationContext } from '../contexts';
 import constants from '../constants';
+import refreshIcon from '../assets/refresh-icon.svg';
+import styled, { keyframes } from 'styled-components';
 const { authServerOrigin, resourceServerOrigin, githubClientId, redirectUrl } = config;
 
+
+const rotate = keyframes`
+  fromm {
+    transofrm: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 100px;
+`
+
+const Loading = styled.div`
+  animation: ${rotate} 2s linear infinite;
+`;
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -61,7 +82,7 @@ function LoginCallback() {
                 .then((response) => {
                   response.json()
                     .then((userProfile) => {
-                      localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                      localStorage.setItem(constants.USER_PRPFILE, JSON.stringify(userProfile));
                       authentication.toggleAuthenticated(true);
                       sessionStorage.removeItem(constants.CSRF_KEY)
                       history.push('/dashboard');
@@ -78,7 +99,11 @@ function LoginCallback() {
     }
   }, [])
   return (
-    <div>this is processing</div>
+    <Container>
+      <Loading>
+        <img src={refreshIcon} />
+      </Loading>
+    </Container>
   )
 }
 

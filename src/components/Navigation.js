@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { AuthenticationContext } from '../contexts';
 
 const Container = styled.div`
   width: 100%;
@@ -8,7 +9,7 @@ const Container = styled.div`
   padding: 10px 5px;
   box-shadow: 0 3px 3px #E9E9E9;
   box-sizing: border-box;
-`;
+`
 
 const Nav = styled.nav`
   display: flex;
@@ -21,17 +22,37 @@ const LeftDivision = styled.div`
   }
 `
 
+const Button = styled.div`
+  cursor: pointer;
+`
+
 function Navigation () {
   return (
-    <Container>
-      <Nav>
-        <LeftDivision>
-          <Link to="/">Home</Link>
-          <Link to="/dashboard">Dashboard</Link>
-        </LeftDivision>
-        <Link to="/login">Login</Link>
-      </Nav>
-    </Container>
+    <AuthenticationContext.Consumer>
+      {
+        ({ authenticated, toggleAuthenticated }) => {
+          const signOutHandler = () => {
+            toggleAuthenticated(false);
+          }
+          const User = authenticated ? (
+            <Button onClick={() => {
+              signOutHandler();
+            }}>Sign out</Button>
+          ) : <Link to="/login">Sign in</Link>
+          return (
+            <Container>
+              <Nav>
+                <LeftDivision>
+                  <Link to="/">Home</Link>
+                  <Link to="/dashboard">Dashboard</Link>
+                </LeftDivision>
+                {User}
+              </Nav>
+            </Container>
+          );
+        }
+      }
+    </AuthenticationContext.Consumer>
   );
 }
 
