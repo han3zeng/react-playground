@@ -3,13 +3,15 @@ import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 import config from '../config';
 import constants from '../constants';
+import githubLogo from '../assets/github-logo.png';
+import googleLogo from '../assets/google-logo.svg';
 
 
 const Container = styled.div`
   margin: 50px auto;
+  padding: 20px;
   border: 1px solid black;
   width: 300px;
-  height: 500px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -20,21 +22,39 @@ const Container = styled.div`
     color: black;
     text-decoration: none;
   }
-  border-radius: 3px;
+  border-radius: 10px;
 `;
 
-const Button = styled.a`
-  border: 1px solid gray;
-  padding: 4px;
+const Button = styled.div`
+  margin: 20px 0;
+  padding: 8px 18px;
   cursor: pointer;
   bottom: 0;
   right: 0;
   cursor: pointer;
-  font-size: 26px;
-  width: 85%;
+  font-size: 16px;
+  font-weight: 600;
   text-align: center;
-  border-radius: 3px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  > img {
+    height: 30px;
+    width: 30px;
+    margin-right: 16px;
+  }
 `;
+
+const GithubButton = styled(Button)`
+  color: white;
+  background-color: #333;
+`
+
+const GoogleButton = styled(Button)`
+  color: #8C8C8C;
+  background-color: white;
+  box-shadow: 0px 1px 2px #8C8C8C;
+`
 
 const GITHUB_AUTH_URL = 'https://github.com/login/oauth/authorize';
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -121,20 +141,22 @@ class Login extends Component {
   render () {
     return (
       <Container>
-        <Button
+        <GithubButton
           onClick={() => {
             this.onClickHandler(constants.GITHUB)
           }}
         >
-          Sgin in with Github
-        </Button>
-        <Button
+          <img src={githubLogo} alt="github logo" />
+          <span>Sgin in with Github</span>
+        </GithubButton>
+        <GoogleButton
           onClick={() => {
             this.onClickHandler(constants.GOOGLE)
           }}
         >
-          Sign in with Google
-        </Button>
+          <img src={googleLogo} alt="google logo" />
+          <span>Sign in with Google</span>
+        </GoogleButton>
       </Container>
     )
   }
