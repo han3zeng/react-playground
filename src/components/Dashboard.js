@@ -22,7 +22,6 @@ const Content = styled.div`
 
 function Dashboard () {
   const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-  console.log('userProfile: ', userProfile)
   const { name, email, avatarURL } = userProfile;
   return (
     <Container>

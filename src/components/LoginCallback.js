@@ -5,7 +5,13 @@ import { AuthenticationContext } from '../contexts';
 import constants from '../constants';
 import refreshIcon from '../assets/refresh-icon.svg';
 import styled, { keyframes } from 'styled-components';
-const { authServerOrigin, resourceServerOrigin, githubClientId, redirectUrl } = config;
+const {
+  authServerOrigin,
+  resourceServerOrigin,
+  githubClientId,
+  redirectUrl,
+  googleCleintId
+} = config;
 
 
 const rotate = keyframes`
@@ -48,55 +54,68 @@ function LoginCallback() {
       history.push("/login?errorType=inconsistentState");
       return;
     }
-    if (service === 'github') {
-      const options = {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: JSON.stringify({
-          code,
+    const params = (() => {
+      if (service === 'github') {
+        return {
+          authorizeURL: `${authServerOrigin}/auth/github`,
           clientID: githubClientId,
-          redirectUri: redirectUrl
-        }),
+        };
+      } else if (service === 'google') {
+        return {
+          authorizeURL: `${authServerOrigin}/auth/google`,
+          clientID: googleCleintId,
+        }
       }
-      fetch(`${authServerOrigin}/auth/github`, options)
-        .then((response) => {
-          response.json()
-            .then((data) => {
-              const { accessToken } = data;
-              fetch(`${resourceServerOrigin}/user/login`, {
-                method: 'GET',
-                mode: 'cors',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${accessToken}`
-                },
-                referrerPolicy: 'no-referrer',
-                credentials: 'include'
-              })
-                .then((response) => {
-                  response.json()
-                    .then((userProfile) => {
-                      localStorage.setItem(constants.USER_PRPFILE, JSON.stringify(userProfile));
-                      authentication.toggleAuthenticated(true);
-                      sessionStorage.removeItem(constants.CSRF_KEY)
-                      history.push('/dashboard');
-                    })
-                })
-                .catch(() => {
-                  console.log('error')
-                })
-            })
-        })
-        .catch(() => {
-          console.log('error')
-        })
+    })()
+
+    const options = {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+      body: JSON.stringify({
+        code: decodeURIComponent(code),
+        clientID: params.clientID,
+        redirectUri: redirectUrl
+      }),
     }
+    fetch(params.authorizeURL, options)
+      .then((response) => {
+        response.json()
+          .then((data) => {
+            const { accessToken } = data;
+            fetch(`${resourceServerOrigin}/user/login`, {
+              method: 'GET',
+              mode: 'cors',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+              },
+              referrerPolicy: 'no-referrer',
+              credentials: 'include'
+            })
+              .then((response) => {
+                response.json()
+                  .then((userProfile) => {
+                    const { name, email, avatarURL } = userProfile
+                    localStorage.setItem(constants.USER_PRPFILE, JSON.stringify({ name, email, avatarURL }));
+                    authentication.toggleAuthenticated(true);
+                    sessionStorage.removeItem(constants.CSRF_KEY)
+                    history.push('/dashboard');
+                  })
+              })
+              .catch(() => {
+                console.log('error')
+              })
+          })
+      })
+      .catch(() => {
+        console.log('error')
+      })
   }, [])
   return (
     <Container>

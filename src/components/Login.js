@@ -23,7 +23,7 @@ const Container = styled.div`
   border-radius: 3px;
 `;
 
-const GithubButton = styled.a`
+const Button = styled.a`
   border: 1px solid gray;
   padding: 4px;
   cursor: pointer;
@@ -37,6 +37,7 @@ const GithubButton = styled.a`
 `;
 
 const GITHUB_AUTH_URL = 'https://github.com/login/oauth/authorize';
+const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 
 class Login extends Component {
   constructor(props) {
@@ -48,20 +49,69 @@ class Login extends Component {
     this.onClickHandler = this._onClickHandler.bind(this);
   }
 
-  _onClickHandler() {
+  _onClickHandler(serviceProvider) {
     if (!window) return;
     const state = {
-      service: 'github',
+      service: serviceProvider,
       csrfKey: this.csrfKey,
     }
-    const params = new URLSearchParams({
-      client_id: config.githubClientId,
-      redirect_uri: config.redirectUrl,
-      scope: 'read:user user:email',
-      state: encodeURIComponent(JSON.stringify(state))
-    });
+
+    const clientId = (() => {
+      switch (serviceProvider) {
+        case constants.GITHUB:
+          return config.githubClientId;
+        case constants.GOOGLE:
+          return config.googleCleintId;
+        default:
+          return undefined;
+      }
+    })()
+
+    const scope = (() => {
+      switch (serviceProvider) {
+        case constants.GITHUB:
+          return 'read:user user:email';
+        case constants.GOOGLE:
+          return 'profile email openid';
+        default:
+          return undefined;
+      }
+    })()
+
+    const baseURL = (() => {
+      switch (serviceProvider) {
+        case constants.GITHUB:
+          return GITHUB_AUTH_URL;
+        case constants.GOOGLE:
+          return GOOGLE_AUTH_URL;
+        default:
+          return undefined;
+      }
+    })()
+
+    const params = (() => {
+      const base = {
+        response_type: 'code',
+        client_id: clientId,
+        redirect_uri: config.redirectUrl,
+        scope: scope,
+        state: encodeURIComponent(JSON.stringify(state))
+      }
+      const result = (() => {
+        if (serviceProvider === constants.GITHUB) {
+          return base;
+        }
+        if (serviceProvider === constants.GOOGLE) {
+          return {
+            ...base,
+            access_type: 'offline'
+          }
+        }
+      })();
+      return new URLSearchParams(result);
+    })();
     sessionStorage.setItem(constants.CSRF_KEY, this.csrfKey)
-    window.location.href = `${GITHUB_AUTH_URL}?${params}`
+    window.location.href = `${baseURL}?${params}`
   }
 
   componentDidMount() {
@@ -69,14 +119,22 @@ class Login extends Component {
   }
 
   render () {
-
     return (
       <Container>
-        <GithubButton
-          onClick={this.onClickHandler}
+        <Button
+          onClick={() => {
+            this.onClickHandler(constants.GITHUB)
+          }}
         >
-          Github Sign in
-        </GithubButton>
+          Sgin in with Github
+        </Button>
+        <Button
+          onClick={() => {
+            this.onClickHandler(constants.GOOGLE)
+          }}
+        >
+          Sign in with Google
+        </Button>
       </Container>
     )
   }
