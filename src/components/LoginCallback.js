@@ -50,7 +50,7 @@ function LoginCallback() {
 
     }
     const { csrfKey, service } = stateObject;
-    if (csrfKey !== sessionStorage.getItem(constants.CSRF_KEY)) {
+    if (sessionStorage.getItem(constants.CSRF_KEY) && (csrfKey !== sessionStorage.getItem(constants.CSRF_KEY))) {
       history.push("/login?errorType=inconsistentState");
       return;
     }

@@ -1,33 +1,42 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import config from '../config';
 import constants from '../constants';
 import githubLogo from '../assets/github-logo.png';
 import googleLogo from '../assets/google-logo.svg';
 
-
 const Container = styled.div`
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid black;
-  width: 300px;
+  text-align: center;
+  margin: 50px 0;
+  a {
+    color: ${props => props.theme.buttonColor};
+    font-weight: 500;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`
+
+const SignInContainer = styled.div`
+  padding: 0 20px;
+  border: 1px solid #333;
+  display: inline-block;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   color: black;
+  margin-bottom: 10px;
   a {
     color: black;
     text-decoration: none;
   }
-  border-radius: 10px;
+  border-radius: 5px;
 `;
 
 const Button = styled.div`
   margin: 20px 0;
   padding: 8px 18px;
+  width: 200px;
   cursor: pointer;
   bottom: 0;
   right: 0;
@@ -141,22 +150,27 @@ class Login extends Component {
   render () {
     return (
       <Container>
-        <GithubButton
-          onClick={() => {
-            this.onClickHandler(constants.GITHUB)
-          }}
-        >
-          <img src={githubLogo} alt="github logo" />
-          <span>Sgin in with Github</span>
-        </GithubButton>
-        <GoogleButton
-          onClick={() => {
-            this.onClickHandler(constants.GOOGLE)
-          }}
-        >
-          <img src={googleLogo} alt="google logo" />
-          <span>Sign in with Google</span>
-        </GoogleButton>
+        <SignInContainer>
+          <GithubButton
+            onClick={() => {
+              this.onClickHandler(constants.GITHUB)
+            }}
+          >
+            <img src={githubLogo} alt="github logo" />
+            <span>Sgin in with Github</span>
+          </GithubButton>
+          <GoogleButton
+            onClick={() => {
+              this.onClickHandler(constants.GOOGLE)
+            }}
+          >
+            <img src={googleLogo} alt="google logo" />
+            <span>Sign in with Google</span>
+          </GoogleButton>
+        </SignInContainer>
+        <div>
+          New to the service ? <Link to="/sign-up">Create an account</Link>
+        </div>
       </Container>
     )
   }

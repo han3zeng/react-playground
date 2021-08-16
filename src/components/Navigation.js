@@ -5,7 +5,7 @@ import { AuthenticationContext } from '../contexts';
 
 const Container = styled.div`
   width: 100%;
-  font-size:  30px;
+  font-size:  26px;
   padding: 10px 5px;
   box-shadow: 0 3px 3px #E9E9E9;
   box-sizing: border-box;

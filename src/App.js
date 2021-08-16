@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import Navigation from "./components/Navigation";
 import Layout from "./components/Layout";
+import SignUp from './components/SignUp';
 import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { breakpoints } from "./config";
@@ -35,6 +36,8 @@ const GlobalStyle = createGlobalStyle`
     font-family: ${props => props.theme.fontFamily};
     font-size: 14px;
     line-height: 1.5;
+    margin: 0;
+    padding: 0;
   }
 
   p {
@@ -77,6 +80,15 @@ const GlobalStyle = createGlobalStyle`
   }
 
   input, textarea, button {font-family: inherit}
+
+  button {
+    border: none;
+    text-decoration: none;
+    outline: none;
+    color: white;
+    background-color: ${props => props.theme.buttonColor};
+    padding: 5px 8px;
+  }
 `;
 
 class App extends React.Component {
@@ -128,6 +140,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/login-callback">
                   <LoginCallback />
+                </Route>
+                <Route path="/sign-up">
+                  <SignUp />
                 </Route>
                 <Route path="/dashboard">
                   { authenticated ? <Dashboard />  : <Redirect to='/' />}
