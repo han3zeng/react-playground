@@ -18,7 +18,8 @@ const {
 
 const stages = {
   signUp: 'signUp',
-  afterSignUp: 'afterSignUp'
+  signUpSuccessfully: 'signUpSuccessfully',
+  error: 'error'
 }
 
 const Conatiner = styled.div`
@@ -78,7 +79,10 @@ const SignUpInfo = styled.p`
 `
 
 function SignUp() {
-  const [stage, setStage] = useState(stages.signUp);
+  const [stage, setStage] = useState({
+    status: stages.signUp,
+    message: null,
+  });
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -176,10 +180,16 @@ function SignUp() {
         const response = await fetch(`${authServerOrigin}/account/authorize`, options);
         const result = await response.json();
         const { ok, message } = result;
-        console.log('ok: ', ok)
-        console.log('message: ', message);
         if (ok) {
-          setStage(stages.afterSignUp);
+          setStage({
+            status: stages.signUpSuccessfully,
+            message,
+          });
+        } else {
+          setStage({
+            status: stages.error,
+            message,
+          });
         }
       } catch(e) {
         console.log('error: ', e)
@@ -188,7 +198,7 @@ function SignUp() {
   }
 
   const content = () => {
-    if (stage === 'signUp') {
+    if (stage.status !== stages.signUpSuccessfully) {
       return (
         <div>
           <Row>
@@ -208,14 +218,15 @@ function SignUp() {
           >
             Sign Up
           </Button>
+          {stage.status === stages.error && <Error>{stage.message}</Error>}
         </div>
       );
-    } else if (stages.afterSignUp) {
+    } else if (stages.signUpSuccessfully) {
       return (
         <SignUpInfo>
           {`You wil receive a mail at ${form.email}.`}
           <br />
-          Please click the link in the mail to intiate your account
+          Please click the link in the mail to intiate your account.
         </SignUpInfo>
       )
     } else {
