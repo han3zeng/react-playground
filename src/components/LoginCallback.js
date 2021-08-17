@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, memo } from 'react';
+import React, { useEffect, useContext, memo, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import config from '../config';
 import { AuthenticationContext } from '../contexts';
@@ -12,6 +12,17 @@ const {
   redirectUrl,
   googleCleintId
 } = config;
+const {
+  GITHUB,
+  GOOGLE,
+  ACCOUNT,
+  CSRF_KEY,
+  USER_PRPFILE
+} = constants;
+const stages = {
+  loading: 'loading',
+  error: 'error'
+}
 
 
 const rotate = keyframes`
@@ -41,6 +52,7 @@ function LoginCallback() {
   const query = useQuery();
   const history = useHistory();
   const authentication = useContext(AuthenticationContext);
+  const [stage, setStage] = useState('loading');
   useEffect(() => {
     let stateObject = {}
     const code = query.get('code')
@@ -50,23 +62,54 @@ function LoginCallback() {
 
     }
     const { csrfKey, service } = stateObject;
-    if (sessionStorage.getItem(constants.CSRF_KEY) && (csrfKey !== sessionStorage.getItem(constants.CSRF_KEY))) {
+    if (sessionStorage.getItem(CSRF_KEY) && (csrfKey !== sessionStorage.getItem(CSRF_KEY))) {
       history.push("/login?errorType=inconsistentState");
       return;
     }
     const params = (() => {
-      if (service === 'github') {
+      if (service === GITHUB) {
         return {
-          authorizeURL: `${authServerOrigin}/auth/github`,
+          authorizeURL: `${authServerOrigin}/token/github`,
           clientID: githubClientId,
         };
-      } else if (service === 'google') {
+      } else if (service === GOOGLE) {
         return {
-          authorizeURL: `${authServerOrigin}/auth/google`,
+          authorizeURL: `${authServerOrigin}/token/google`,
           clientID: googleCleintId,
+        }
+      } else if (service === ACCOUNT) {
+        return {
+          authorizeURL: `${authServerOrigin}/token/account`,
+          clientID: null,
         }
       }
     })()
+
+    const Login = ({ accessToken }) => {
+      fetch(`${resourceServerOrigin}/user/login`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        referrerPolicy: 'no-referrer',
+        credentials: 'include'
+      })
+        .then((response) => {
+          response.json()
+            .then((userProfile) => {
+              const { name, email, avatarURL } = userProfile
+              localStorage.setItem(USER_PRPFILE, JSON.stringify({ name, email, avatarURL }));
+              authentication.toggleAuthenticated(true);
+              sessionStorage.removeItem(CSRF_KEY)
+              history.push('/dashboard');
+            })
+        })
+        .catch(() => {
+          console.log('error')
+        })
+    }
 
     const options = {
       method: 'POST',
@@ -87,41 +130,35 @@ function LoginCallback() {
       .then((response) => {
         response.json()
           .then((data) => {
-            const { accessToken } = data;
-            fetch(`${resourceServerOrigin}/user/login`, {
-              method: 'GET',
-              mode: 'cors',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-              },
-              referrerPolicy: 'no-referrer',
-              credentials: 'include'
-            })
-              .then((response) => {
-                response.json()
-                  .then((userProfile) => {
-                    const { name, email, avatarURL } = userProfile
-                    localStorage.setItem(constants.USER_PRPFILE, JSON.stringify({ name, email, avatarURL }));
-                    authentication.toggleAuthenticated(true);
-                    sessionStorage.removeItem(constants.CSRF_KEY)
-                    history.push('/dashboard');
-                  })
+            const { accessToken, ok } = data;
+            if (ok) {
+              Login({
+                accessToken
               })
-              .catch(() => {
-                console.log('error')
-              })
+            } else {
+              setStage(stages.error)
+            }
           })
       })
       .catch(() => {
         console.log('error')
       })
   }, [])
+  const content = () => {
+    if (stage === stages.loading) {
+      return (
+        <Loading>
+          <img src={refreshIcon} />
+        </Loading>
+      )
+    } else if (stage === stages.error)
+      return (
+        <p>Invalid auth code</p>
+      )
+  }
   return (
     <Container>
-      <Loading>
-        <img src={refreshIcon} />
-      </Loading>
+      {content()}
     </Container>
   )
 }

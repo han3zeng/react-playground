@@ -1,6 +1,7 @@
 const loginServices = {
   GITHUB: 'github',
   GOOGLE: 'google',
+  ACCOUNT: 'account',
 }
 
 const index = {

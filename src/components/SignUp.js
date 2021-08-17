@@ -1,9 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { signUp } from '../utils';
 import produce from "immer";
 import { debounce } from 'lodash';
 import config from '../config';
+
+const { authServerOrigin } = config;
 
 const _ = {
   debounce,
@@ -13,6 +15,11 @@ const {
   emailValidation,
   passwordPrimitiveValidation
 } = signUp;
+
+const stages = {
+  signUp: 'signUp',
+  afterSignUp: 'afterSignUp'
+}
 
 const Conatiner = styled.div`
   width: 380px;
@@ -27,6 +34,12 @@ const Conatiner = styled.div`
     box-sizing: border-box;
     width: 100%;
     padding: 8px 5px;
+    outline: none;
+    border-radius: 3px;
+    border: 1px solid #BEBEBE;
+    &:focus {
+      border-color: #333;
+    }
   }
 `;
 
@@ -60,8 +73,12 @@ const Error = styled.div`
   color: red;
 `;
 
+const SignUpInfo = styled.p`
+  text-align: center;
+`
+
 function SignUp() {
-  const [stage, setStage] = useState('signUp');
+  const [stage, setStage] = useState(stages.signUp);
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -133,9 +150,40 @@ function SignUp() {
     );
   }
 
-  const onSubmitHandler = () => {
+  const onSubmitHandler = async () => {
     if (allowed) {
-
+      const {
+        username,
+        email,
+        password
+      } = form;
+      try {
+        const options = {
+          method: 'POST',
+          mode: 'cors',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          redirect: 'follow',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify({
+            email,
+            password,
+            username
+          }),
+        }
+        const response = await fetch(`${authServerOrigin}/account/authorize`, options);
+        const result = await response.json();
+        const { ok, message } = result;
+        console.log('ok: ', ok)
+        console.log('message: ', message);
+        if (ok) {
+          setStage(stages.afterSignUp);
+        }
+      } catch(e) {
+        console.log('error: ', e)
+      }
     }
   }
 
@@ -162,6 +210,16 @@ function SignUp() {
           </Button>
         </div>
       );
+    } else if (stages.afterSignUp) {
+      return (
+        <SignUpInfo>
+          {`You wil receive a mail at ${form.email}.`}
+          <br />
+          Please click the link in the mail to intiate your account
+        </SignUpInfo>
+      )
+    } else {
+      return null;
     }
   }
 
