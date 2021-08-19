@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import InputRow from '../InputRow';
 import useForm from '../../hooks/useForm';
 import styled from 'styled-components';
 import config from '../../config';
+import { AuthenticationContext } from '../../contexts';
 const { authServerOrigin } = config;
 
 const Button = styled.button`
@@ -20,9 +22,13 @@ const Button = styled.button`
 const Error = styled.div`
   font-size: 12px;
   color: red;
+  text-align: center;
+  margin-top: 10px;
 `;
 
 function Password () {
+  const authentication = useContext(AuthenticationContext);
+  const history = useHistory();
   const {
     form,
     error,
@@ -33,6 +39,11 @@ function Password () {
   } = useForm()
 
   const allowed = !error.email && !error.password && !!form.email && !!form.password;
+
+  const onSubmitCallBack = () => {
+    authentication.toggleAuthenticated(true);
+    history.push('/dashboard');
+  }
 
   return (
     <>
@@ -55,8 +66,15 @@ function Password () {
         onClick={() => {
           if (allowed) {
             onSubmitHandler({
-              url: `${authServerOrigin}/account/authorize`,
-            });
+              url: `${authServerOrigin}/account/sign-in`,
+              isSignIn: true,
+            })
+            .then(() => {
+              onSubmitCallBack();
+            })
+            .catch(() => {
+
+            })
           }
         }}
       >

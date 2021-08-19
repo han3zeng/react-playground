@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { debounce } from 'lodash';
 import { form as formUtils } from '../utils';
+import { form } from '../utils';
+
+const { signIn } = form;
 
 const _ = {
   debounce,
@@ -77,40 +80,52 @@ function useForm() {
     });
   }, 500);
 
-  const onSubmitHandler = async ({
+  const onSubmitHandler = ({
     url,
+    isSignIn,
   }) => {
-    try {
-      const options = {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: JSON.stringify({
-          ...form
-        }),
+    return new Promise(async (resolve, reject) => {
+      try {
+        const options = {
+          method: 'POST',
+          mode: 'cors',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          redirect: 'follow',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify({
+            ...form
+          }),
+        }
+        const response = await fetch(`${url}`, options);
+        const result = await response.json();
+        const { ok, message } = result;
+        if (response.status === 200 && ok) {
+          setStage({
+            status: stages.postSubmit,
+            message,
+          });
+          if (isSignIn) {
+            const { accessToken } = result;
+            await signIn({ accessToken })
+              .catch(() => {
+                reject();
+              })
+            resolve();
+          }
+        } else {
+          setStage({
+            status: stages.error,
+            message,
+          });
+          reject();;
+        }
+      } catch(e) {
+        console.log('error: ', e)
       }
-      const response = await fetch(`${url}`, options);
-      const result = await response.json();
-      const { ok, message } = result;
-      if (ok) {
-        setStage({
-          status: stages.postSubmit,
-          message,
-        });
-      } else {
-        setStage({
-          status: stages.error,
-          message,
-        });
-      }
-    } catch(e) {
-      console.log('error: ', e)
-    }
+    })
   }
 
   return {

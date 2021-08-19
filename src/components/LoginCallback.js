@@ -5,19 +5,21 @@ import { AuthenticationContext } from '../contexts';
 import constants from '../constants';
 import refreshIcon from '../assets/refresh-icon.svg';
 import styled, { keyframes } from 'styled-components';
+import { form } from '../utils';
+
+const { signIn } = form;
 const {
   authServerOrigin,
-  resourceServerOrigin,
   githubClientId,
   redirectUrl,
   googleCleintId
 } = config;
+
 const {
   GITHUB,
   GOOGLE,
   ACCOUNT,
   CSRF_KEY,
-  USER_PRPFILE
 } = constants;
 const stages = {
   loading: 'loading',
@@ -85,32 +87,6 @@ function LoginCallback() {
       }
     })()
 
-    const Login = ({ accessToken }) => {
-      fetch(`${resourceServerOrigin}/user/login`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
-        referrerPolicy: 'no-referrer',
-        credentials: 'include'
-      })
-        .then((response) => {
-          response.json()
-            .then((userProfile) => {
-              const { name, email, avatarURL } = userProfile
-              localStorage.setItem(USER_PRPFILE, JSON.stringify({ name, email, avatarURL }));
-              authentication.toggleAuthenticated(true);
-              sessionStorage.removeItem(CSRF_KEY)
-              history.push('/dashboard');
-            })
-        })
-        .catch(() => {
-          console.log('error')
-        })
-    }
-
     const options = {
       method: 'POST',
       mode: 'cors',
@@ -132,8 +108,15 @@ function LoginCallback() {
           .then((data) => {
             const { accessToken, ok } = data;
             if (ok) {
-              Login({
+              signIn({
                 accessToken
+              })
+              .then(() => {
+                authentication.toggleAuthenticated(true);
+                history.push('/dashboard');
+              })
+              .catch(() => {
+
               })
             } else {
               setStage(stages.error)

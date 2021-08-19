@@ -1,4 +1,14 @@
 import produce from "immer";
+import config from '../config';
+import constants from '../constants';
+
+const {
+  resourceServerOrigin,
+} = config;
+const {
+  CSRF_KEY,
+  USER_PRPFILE
+} = constants;
 
 const emailValidation = (email) => {
   if (typeof email !== 'string') {
@@ -16,10 +26,45 @@ const passwordPrimitiveValidation = (password) => {
   return (password.length >= 8) && regex.test(password);
 }
 
-
-const signUp =  {
-  emailValidation,
-  passwordPrimitiveValidation
+const signIn = ({ accessToken }) => {
+  return new Promise((resolve, reject) => {
+    fetch(`${resourceServerOrigin}/user/sign-in`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      referrerPolicy: 'no-referrer',
+      credentials: 'include'
+    })
+      .then((response) => {
+        response.json()
+          .then((response) => {
+            const { data, ok, message } = response;
+            if (ok) {
+              const { name, email, avatarURL } = data
+              localStorage.setItem(USER_PRPFILE, JSON.stringify({ name, email, avatarURL }));
+              sessionStorage.removeItem(CSRF_KEY)
+              resolve();
+            } else {
+              console.log('error message: ', message)
+              reject();
+            }
+          })
+      })
+      .catch(() => {
+        console.log('error')
+        reject();
+      })
+  })
 }
 
-export default signUp
+
+const form = {
+  emailValidation,
+  passwordPrimitiveValidation,
+  signIn
+}
+
+export default form;
