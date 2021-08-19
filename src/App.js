@@ -1,7 +1,7 @@
 import React from "react";
 import Home from "./components/Home";
 import LoginCallback from "./components/LoginCallback";
-import Login from "./components/Login";
+import SignIn from "./components/SignIn";
 import Dashboard from "./components/Dashboard";
 import Navigation from "./components/Navigation";
 import Layout from "./components/Layout";
@@ -135,8 +135,8 @@ class App extends React.Component {
                 <Route exact path="/">
                   <Home />
                 </Route>
-                <Route path="/login">
-                 { authenticated ? <Redirect to='/dashboard' />  : <Login /> }
+                <Route path="/sign-in">
+                 { authenticated ? <Redirect to='/dashboard' />  : <SignIn /> }
                 </Route>
                 <Route path="/login-callback">
                   <LoginCallback />

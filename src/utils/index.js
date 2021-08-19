@@ -1,5 +1,5 @@
-import signUp from './sign-up';
+import form from './form';
 
 export {
-  signUp
+  form
 }

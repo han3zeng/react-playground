@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import config from '../config';
-import constants from '../constants';
-import githubLogo from '../assets/github-logo.png';
-import googleLogo from '../assets/google-logo.svg';
+import config from '../../config';
+import constants from '../../constants';
+import githubLogo from '../../assets/github-logo.png';
+import googleLogo from '../../assets/google-logo.svg';
 
 const Container = styled.div`
   text-align: center;
-  margin: 50px 0;
   a {
     color: ${props => props.theme.buttonColor};
     font-weight: 500;
@@ -19,10 +18,7 @@ const Container = styled.div`
   }
 `
 
-const SignInContainer = styled.div`
-  padding: 0 20px;
-  border: 1px solid #333;
-  display: inline-block;
+const OAuthContainer = styled.div`
   position: relative;
   color: black;
   margin-bottom: 10px;
@@ -30,27 +26,34 @@ const SignInContainer = styled.div`
     color: black;
     text-decoration: none;
   }
-  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  > div:nth-child(odd) {
+    margin-right: 10px;
+  }
 `;
 
 const Button = styled.div`
   margin: 20px 0;
-  padding: 8px 18px;
-  width: 200px;
+  padding: 8px 10px;
   cursor: pointer;
   bottom: 0;
   right: 0;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   text-align: center;
   border-radius: 5px;
+  flex: 1 1 180px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   > img {
     height: 30px;
     width: 30px;
-    margin-right: 16px;
+  }
+  span {
+    white-space: nowrap;
   }
 `;
 
@@ -150,7 +153,7 @@ class Login extends Component {
   render () {
     return (
       <Container>
-        <SignInContainer>
+        <OAuthContainer>
           <GithubButton
             onClick={() => {
               this.onClickHandler(constants.GITHUB)
@@ -167,7 +170,7 @@ class Login extends Component {
             <img src={googleLogo} alt="google logo" />
             <span>Sign in with Google</span>
           </GoogleButton>
-        </SignInContainer>
+        </OAuthContainer>
         <div>
           New to the service ? <Link to="/sign-up">Create an account</Link>
         </div>

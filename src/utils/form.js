@@ -1,3 +1,5 @@
+import produce from "immer";
+
 const emailValidation = (email) => {
   if (typeof email !== 'string') {
     return false;
@@ -13,6 +15,7 @@ const passwordPrimitiveValidation = (password) => {
   const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/;
   return (password.length >= 8) && regex.test(password);
 }
+
 
 const signUp =  {
   emailValidation,

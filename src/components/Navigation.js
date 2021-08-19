@@ -38,7 +38,7 @@ function Navigation () {
             <Button onClick={() => {
               signOutHandler();
             }}>Sign out</Button>
-          ) : <Link to="/login">Sign in</Link>
+          ) : <Link to="/sign-in">Sign in</Link>
           return (
             <Container>
               <Nav>
