@@ -62,7 +62,7 @@ const GlobalStyle = createGlobalStyle`
     @media(max-width: ${breakpoints.maxTablet}px) {
       font-size: 30px;
     }
-    margin-bottom: 2em;
+    margin: 1em 0 1em 0;
   }
 
   h3 {
