@@ -7,6 +7,10 @@ import constants from '../../constants';
 import githubLogo from '../../assets/github-logo.png';
 import googleLogo from '../../assets/google-logo.svg';
 
+const { origin, redirectPath } = config
+
+const redirectUrl = `${origin}/${redirectPath}`;
+
 const Container = styled.div`
   text-align: center;
   a {
@@ -125,7 +129,7 @@ class Login extends Component {
       const base = {
         response_type: 'code',
         client_id: clientId,
-        redirect_uri: config.redirectUrl,
+        redirect_uri: redirectUrl,
         scope: scope,
         state: encodeURIComponent(JSON.stringify(state))
       }

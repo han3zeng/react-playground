@@ -11,9 +11,12 @@ const { signIn } = form;
 const {
   authServerOrigin,
   githubClientId,
-  redirectUrl,
+  origin,
+  redirectPath,
   googleCleintId
 } = config;
+
+const redirectUrl = `${origin}/${redirectPath}`;
 
 const {
   GITHUB,
