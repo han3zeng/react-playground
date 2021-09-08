@@ -8,6 +8,7 @@ import Layout from "./components/Layout";
 import SignUp from './components/SignUp';
 import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
+import { Helmet } from "react-helmet";
 import { breakpoints } from "./config";
 import { AuthenticationContext } from './contexts';
 import constants from './constants';
@@ -97,7 +98,8 @@ class App extends React.Component {
     this.toggleAuthenticated = this._toggleAuthenticated.bind(this);
     this.state = {
       authenticated: document ? !!localStorage.getItem(constants.USER_PRPFILE) : false,
-      toggleAuthenticated: this.toggleAuthenticated
+      toggleAuthenticated: this.toggleAuthenticated,
+      csrfToken: '',
     }
   }
 
@@ -121,12 +123,30 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    fetch(`${resourceServerOrigin}/initialization`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    })
+    .then(async (response) => {
+      const data = await response.json();
+      const { csrfToken } = data;
+      this.setState({
+        csrfToken,
+      })
+    })
   }
 
   render() {
-    const { authenticated } = this.state;
+    const { authenticated, csrfToken } = this.state;
     return (
       <ThemeProvider theme={theme}>
+        <Helmet>
+          <meta name="csrf-token" content={csrfToken} />
+        </Helmet>
         <Router>
           <AuthenticationContext.Provider value={this.state}>
             <Navigation />

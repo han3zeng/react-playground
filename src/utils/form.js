@@ -28,15 +28,17 @@ const passwordPrimitiveValidation = (password) => {
 
 const signIn = ({ accessToken }) => {
   return new Promise((resolve, reject) => {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     fetch(`${resourceServerOrigin}/user/sign-in`, {
-      method: 'GET',
+      method: 'POST',
       mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+        'Authorization': `Bearer ${accessToken}`,
+        'CSRF-Token': csrfToken,
       },
       referrerPolicy: 'no-referrer',
-      credentials: 'include'
+      credentials: 'include',
     })
       .then((response) => {
         response.json()
