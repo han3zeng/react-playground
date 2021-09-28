@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   p {
-    font-size: 40px;
+    font-size: 20px;
   }
 `;
 
@@ -11,7 +11,11 @@ const Container = styled.div`
 function Home() {
   return (
     <Container>
-      <p>This is home Page. Please login first so you can browse dashboard page</p>
+      <h2>Overview</h2>
+      <p>This is the Han's playground to practice web development related subjects.</p>
+      <p>Currently, I have been working on personal blog, authorization and authentication system.</p>
+      <h2>How to use the Site?</h2>
+      <p>Sign up or Sign in first, then you can have your own blog.</p>
     </Container>
   );
 }

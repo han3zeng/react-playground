@@ -5,7 +5,7 @@ import { AuthenticationContext } from '../contexts';
 
 const Container = styled.div`
   width: 100%;
-  font-size:  26px;
+  font-size:  20px;
   padding: 10px 15px;
   box-shadow: 0 3px 3px #E9E9E9;
   box-sizing: border-box;
@@ -26,6 +26,24 @@ const Button = styled.div`
   cursor: pointer;
 `
 
+const defaultLinks = [
+  {
+    label: 'Home',
+    path: '/'
+  }
+]
+
+const signedLinks = [
+  {
+    label: 'Profile',
+    path: '/profile',
+  },
+  {
+    label: 'Write a story',
+    path: '/new-story',
+  }
+]
+
 function Navigation () {
   return (
     <AuthenticationContext.Consumer>
@@ -39,12 +57,19 @@ function Navigation () {
               signOutHandler();
             }}>Sign out</Button>
           ) : <Link to="/sign-in">Sign in</Link>
+          const linkData = authenticated ? signedLinks : defaultLinks ;
+          const Links = linkData.map((link) => (
+            <Link
+              to={`${link.path}`}
+            >
+              {link.label}
+            </Link>
+          ));
           return (
             <Container>
               <Nav>
                 <LeftDivision>
-                  <Link to="/">Home</Link>
-                  <Link to="/dashboard">Dashboard</Link>
+                  {Links}
                 </LeftDivision>
                 {User}
               </Nav>

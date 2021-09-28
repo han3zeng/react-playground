@@ -42,7 +42,7 @@ function Password () {
 
   const onSubmitCallBack = () => {
     authentication.toggleAuthenticated(true);
-    history.push('/dashboard');
+    history.push('/profile');
   }
 
   return (

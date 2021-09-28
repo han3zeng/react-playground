@@ -6,9 +6,10 @@ const Container = styled.div`
   margin: 0 auto;
   max-width: 1440px;
   box-sizing: border-box;
-  @media(max-width: ${breakpoints.maxTablet}px) {
+  padding: 0 ${props => props.theme.pageMargin};
+  /* @media(max-width: ${breakpoints.maxTablet}px) {
     padding: 0 ${props => props.theme.pageMargin};
-  }
+  } */
 `;
 
 

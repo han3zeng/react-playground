@@ -2,10 +2,12 @@ import React from "react";
 import Home from "./components/Home";
 import LoginCallback from "./components/LoginCallback";
 import SignIn from "./components/SignIn";
-import Dashboard from "./components/Dashboard";
+import Profile from "./components/Profile";
 import Navigation from "./components/Navigation";
 import Layout from "./components/Layout";
 import SignUp from './components/SignUp';
+import NoMatch from './components/NoMatch';
+import NewStory from './components/NewStory';
 import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Helmet } from "react-helmet";
@@ -32,8 +34,6 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    background-color: var(--color-bg-canvas);
-    color: var(--color-text-primary);
     font-family: ${props => props.theme.fontFamily};
     font-size: 14px;
     line-height: 1.5;
@@ -153,10 +153,10 @@ class App extends React.Component {
             <Layout>
               <Switch>
                 <Route exact path="/">
-                  <Home />
+                  { authenticated ? <Redirect to='/profile' />  : <Home /> }
                 </Route>
                 <Route path="/sign-in">
-                 { authenticated ? <Redirect to='/dashboard' />  : <SignIn /> }
+                 { authenticated ? <Redirect to='/profile' />  : <SignIn /> }
                 </Route>
                 <Route path="/login-callback">
                   <LoginCallback />
@@ -164,8 +164,14 @@ class App extends React.Component {
                 <Route path="/sign-up">
                   <SignUp />
                 </Route>
-                <Route path="/dashboard">
-                  { authenticated ? <Dashboard />  : <Redirect to='/' />}
+                <Route path="/profile">
+                  { authenticated ? <Profile />  : <Redirect to='/' />}
+                </Route>
+                <Route path="/new-story">
+                  { authenticated ? <NewStory />  : <Redirect to='/' />}
+                </Route>
+                <Route path="*">
+                  <NoMatch />
                 </Route>
               </Switch>
             </Layout>

@@ -22,7 +22,7 @@ const Content = styled.div`
   }
 `;
 
-function Dashboard () {
+function Profile () {
   const userProfile = JSON.parse(localStorage.getItem('userProfile'));
   const { name, email, avatarURL } = userProfile;
   return (
@@ -37,4 +37,4 @@ function Dashboard () {
 };
 
 
-export default Dashboard;
+export default Profile;
