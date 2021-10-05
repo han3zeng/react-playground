@@ -60,6 +60,7 @@ function Navigation () {
           const linkData = authenticated ? signedLinks : defaultLinks ;
           const Links = linkData.map((link) => (
             <Link
+              key={`${link.path}`}
               to={`${link.path}`}
             >
               {link.label}
