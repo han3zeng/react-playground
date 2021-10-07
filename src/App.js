@@ -19,6 +19,7 @@ const { resourceServerOrigin } = config;
 
 
 const theme = {
+  inputBorderColor: '#BEBEBE',
   buttonColor: "#326891",
   sectionMargin: "68px",
   pageMargin: "20px;",
@@ -89,6 +90,7 @@ const GlobalStyle = createGlobalStyle`
     color: white;
     background-color: ${props => props.theme.buttonColor};
     padding: 5px 8px;
+    cursor: pointer;
   }
 `;
 

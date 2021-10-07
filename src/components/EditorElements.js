@@ -11,13 +11,26 @@ const Code = styled.code`
   font-size: 85%;
   padding: 3px 6px;
   margin: 0 1px;
-  white-space: normal;
+  white-space: pre-wrap;
+`;
+
+const CodeBlock = styled.code`
+  margin: 0 1px;
+  > div {
+    border-radius: 3px;
+    background-color: #ebeced;
+    font-size: 85%;
+    padding: 3px 6px;
+    white-space: pre-wrap;
+  }
 `;
 
 const CodeElement = (props) => {
   return (
     <pre {...props.attributes}>
-      <Code>{props.children}</Code>
+      <CodeBlock>
+        <div>{props.children}</div>
+      </CodeBlock>
     </pre>
   )
 };
