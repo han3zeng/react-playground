@@ -7,7 +7,7 @@ import Navigation from "./components/Navigation";
 import Layout from "./components/Layout";
 import SignUp from './components/SignUp';
 import NoMatch from './components/NoMatch';
-import NewStory from './components/NewStory';
+import NewStory from './components/Editor/NewStory';
 import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Helmet } from "react-helmet";
@@ -79,6 +79,7 @@ const GlobalStyle = createGlobalStyle`
   a {
     text-decoration: none;
     color: black;
+    cursor: pointer;
   }
 
   input, textarea, button {font-family: inherit}
