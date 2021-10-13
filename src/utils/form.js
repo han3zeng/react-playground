@@ -45,8 +45,8 @@ const signIn = ({ accessToken }) => {
           .then((response) => {
             const { data, ok, message } = response;
             if (ok) {
-              const { name, email, avatarURL } = data
-              localStorage.setItem(USER_PRPFILE, JSON.stringify({ name, email, avatarURL }));
+              const { name, email, avatarURL, sub } = data
+              localStorage.setItem(USER_PRPFILE, JSON.stringify({ name, email, avatarURL, sub }));
               sessionStorage.removeItem(CSRF_KEY)
               resolve();
             } else {

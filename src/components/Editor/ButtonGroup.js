@@ -74,7 +74,8 @@ const LinkModal = ({
   ifShowLinkModal,
   editor,
   insertLink,
-  toggleLinkModal
+  toggleLinkModal,
+  linkSelection,
 }) => {
   const [ url, setUrl ] = useState('https://');
   return (
@@ -94,7 +95,10 @@ const LinkModal = ({
             insertLink({
               editor,
               url,
-            })
+              linkSelection,
+            });
+            toggleLinkModal();
+            setUrl('https://');
           }}
         >
           Add Link
@@ -102,6 +106,7 @@ const LinkModal = ({
         <button
           onClick={() => {
             toggleLinkModal();
+            setUrl('https://')
           }}
         >
           Cancel
@@ -116,6 +121,7 @@ const ButtonGroup = React.memo(({
   CustomEditor,
 }) => {
   const [ ifShowLinkModal, toggleLinkModal ] = useState(null);
+  const [ linkSelection, setLinkSelection ] = useState(null);
   return (
     <>
       <Buttons>
@@ -148,6 +154,11 @@ const ButtonGroup = React.memo(({
             onMouseDown={(e) => {
               e.preventDefault();
               toggleLinkModal(ifShowLinkModal => {
+                if (!ifShowLinkModal) {
+                  setLinkSelection(editor?.selection)
+                } else {
+                  setLinkSelection(null);
+                }
                 return !ifShowLinkModal;
               });
             }}
@@ -168,6 +179,7 @@ const ButtonGroup = React.memo(({
           editor={editor}
           insertLink={CustomEditor.insertLink}
           toggleLinkModal={toggleLinkModal}
+          linkSelection={linkSelection}
         />
       </Buttons>
     </>

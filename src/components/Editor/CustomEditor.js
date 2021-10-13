@@ -18,20 +18,20 @@ const CustomEditor = {
 
   insertLink({
     editor,
-    url
+    url,
+    linkSelection
   }) {
-    const { selection } = editor;
     const link = {
       type: 'link',
       url,
       children: [],
     }
-    console.log('selection: ', selection)
     Transforms.wrapNodes(
       editor,
       link,
       {
         split: true,
+        at: linkSelection,
       }
     )
   },
