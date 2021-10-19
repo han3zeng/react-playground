@@ -9,9 +9,14 @@ const getCSRFToken = () => {
   return undefined;
 };
 
-const getUserProfile = () => {
+const getUserProfile = async () => {
   if (window) {
-    return localStorage?.getItem('userProfile');
+    const dataString = localStorage?.getItem('userProfile');
+    try {
+      return await JSON.parse(dataString);
+    } catch(e) {
+      console.log('parse profile error')
+    }
   }
   return undefined;
 }
@@ -20,9 +25,7 @@ const createStory = async ({
   content,
   title,
 }) => {
-  const userProfile = getUserProfile();
-  const { sub } = userProfile;
-  if (!sub || !title) {
+  if (!title) {
     return;
   }
   const option = {
@@ -37,7 +40,6 @@ const createStory = async ({
     body: JSON.stringify({
       content,
       title,
-      sub
     }),
   }
   try {
@@ -66,9 +68,7 @@ const deleteStory = ({
 const getStories = async ({
   csrfToken
 }) => {
-  const userProfile = getUserProfile();
-  const { sub } = userProfile;
-  if (!sub || !csrfToken) {
+  if (!csrfToken) {
     return;
   }
   const option = {
@@ -79,10 +79,7 @@ const getStories = async ({
       'CSRF-Token': csrfToken,
     },
     referrerPolicy: 'no-referrer',
-    credentials: 'include',
-    body: JSON.stringify({
-      sub
-    }),
+    credentials: 'include'
   }
   try {
     const response = await fetch(`${resourceServerOrigin}/story/get-all`, option);
