@@ -1,17 +1,38 @@
-import React, {useMemo, useState, useCallback} from "react";
+import React, { useMemo, useState, useCallback } from "react";
+import { useHistory } from 'react-router-dom';
 import { createEditor, Transforms, Element } from "slate";
 import {Slate, Editable, withReact} from "slate-react";
 import styled from "styled-components";
 import {CodeElement, DefaultElement, Leaf, LinkElement} from "./EditorElements";
 import CustomEditor from './CustomEditor';
 import ButtonGroup from './ButtonGroup';
-import { createArticle } from '../../api';
+import { createStory } from '../../api';
 
-const Container = styled.div `
+const Container = styled.div`
+  position: relative;
+  padding-top: 40px;
+  overflow: hidden;
+`;
+
+const Tag = styled.div`
+  padding: 3px 6px 4px 6px;
+  position: absolute;
+  left: 50%;
+  top: 0px;
+  transform: ${props => props.isPublishing ? 'translate(-50%, 0)' : 'translate(-50%, -110%)'};
+  font-size: 20px;
+  color: ${props => props.theme.captionColor};
+  transition: transform 0.3s ease-in-out;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  box-shadow: 1px 1px 3px ${props => props.theme.inputBorderColor};
+`
+
+const EditorContainer = styled.div `
   display: flex;
   flex-direction: column;
   max-width: 600px;
-  margin: 30px auto 0 auto;
+  margin: 0 auto 0 auto;
   label {
     font-size: 24px;
   }
@@ -65,15 +86,18 @@ const Row = styled.div`
   align-items: flex-end;
 `
 
-const publishHandler = ({
+const publishHandler = async ({
   title,
   content,
   setError,
 }) => {
   if (!title) {
     setError(true);
+    return {
+      ok: false,
+    }
   } else {
-    createArticle({
+    return await createStory({
       title,
       content,
     })
@@ -82,12 +106,18 @@ const publishHandler = ({
 
 function NewStory() {
   // const editor = useMemo(() => withReact(createEditor()), []);
-  const initialValue = JSON.parse(localStorage.getItem('content')) || []
+  // const initialValue = JSON.parse(localStorage.getItem('content')) || []
+  const initialValue = [{
+    type: 'paragraph',
+    children: [{ text: '' }],
+  }];
   const [ editor ] = useState(() => withReact(createEditor()))
   const { isInline, normalizeNode } = editor;
   const [ value, setValue ] = useState(initialValue);
   const [ title, setTitle ] = useState('')
+  const [ isPublishing, setIsPublishing ] = useState(false);
   const [error, setError] = useState(false);
+  const history = useHistory();
 
   editor.isInline = element => {
     return element.type === 'link'
@@ -168,6 +198,12 @@ function NewStory() {
 
   return (
     <Container>
+      <Tag
+        isPublishing={isPublishing}
+      >
+        Publishing...
+      </Tag>
+      <EditorContainer>
       <div>
         <Row>
           <label>Title</label>
@@ -189,9 +225,9 @@ function NewStory() {
           setValue(value)
           const isAstChange = editor.operations.some(op => 'set_selection' !== op.type)
           if (isAstChange) {
-            // Save the value to Local Storage.
-            const content = JSON.stringify(value)
-            localStorage.setItem('content', content)
+            // Save the value to Local Storage. (you should save it to the database)
+            // const content = JSON.stringify(value)
+            // localStorage.setItem('content', content)
           }
         }}>
         <ButtonGroup editor={editor} CustomEditor={CustomEditor}/>
@@ -204,14 +240,22 @@ function NewStory() {
         </EditableContainer>
       </Slate>
       <ButtonWrapper>
-        <Save onClick={() => {
-          publishHandler({
+        <Save onClick={async () => {
+          setIsPublishing(true);
+          const result = await publishHandler({
             title,
             content: JSON.stringify(value),
             setError,
           })
+          if (!result) {
+            setIsPublishing(false);
+          } else {
+            setIsPublishing(false);
+            history.push("/stories");
+          }
         }}>Publish</Save>
       </ButtonWrapper>
+      </EditorContainer>
     </Container>
   );
 }

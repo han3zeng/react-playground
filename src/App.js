@@ -8,6 +8,7 @@ import Layout from "./components/Layout";
 import SignUp from './components/SignUp';
 import NoMatch from './components/NoMatch';
 import NewStory from './components/Editor/NewStory';
+import Stories from './components/Stories';
 import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Helmet } from "react-helmet";
@@ -172,6 +173,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/new-story">
                   { authenticated ? <NewStory />  : <Redirect to='/' />}
+                </Route>
+                <Route path="/stories">
+                  { authenticated ? <Stories csrfToken={csrfToken} />  : <Redirect to='/' />}
                 </Route>
                 <Route path="*">
                   <NoMatch />

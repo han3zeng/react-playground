@@ -41,6 +41,10 @@ const signedLinks = [
   {
     label: 'Write a story',
     path: '/new-story',
+  },
+  {
+    label: 'Stories',
+    path: '/stories',
   }
 ]
 

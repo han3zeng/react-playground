@@ -16,7 +16,7 @@ const getUserProfile = () => {
   return undefined;
 }
 
-const createArticle = async ({
+const createStory = async ({
   content,
   title,
 }) => {
@@ -40,23 +40,65 @@ const createArticle = async ({
       sub
     }),
   }
-  const response = await fetch(`${resourceServerOrigin}/article/create`, option);
-  const result = await response.json();
-  const { ok, message } = result;
-  if (response.status === 200 && ok) {
-    console.log('create article successfully');
+  try {
+    const response = await fetch(`${resourceServerOrigin}/story/create`, option);
+    const result = await response.json();
+    const { ok, message } = result;
+    if (response.status === 200 && ok) {
+      return {
+        ok: true,
+      }
+    }
+  } catch (e) {
+    return {
+      ok: false,
+    }
   }
 }
 
-const deleteArticle = ({
+const deleteStory = ({
   userSub,
-  articleId,
+  storyId,
 }) => {
 
 }
 
+const getStories = async ({
+  csrfToken
+}) => {
+  const userProfile = getUserProfile();
+  const { sub } = userProfile;
+  if (!sub || !csrfToken) {
+    return;
+  }
+  const option = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'CSRF-Token': csrfToken,
+    },
+    referrerPolicy: 'no-referrer',
+    credentials: 'include',
+    body: JSON.stringify({
+      sub
+    }),
+  }
+  try {
+    const response = await fetch(`${resourceServerOrigin}/story/get-all`, option);
+    const result = await response.json();
+    const { ok, message, stories } = result;
+    if (response.status === 200 && ok) {
+      return stories;
+    }
+  } catch(e) {
+    console.log('get stories error: ', e);
+  }
+}
+
 export {
-  createArticle,
-  deleteArticle,
-  getCSRFToken
+  createStory,
+  deleteStory,
+  getCSRFToken,
+  getStories
 }

@@ -23,3 +23,7 @@
 ## Origin
 * dev: localhost
 * prod: https://react-playground-7kgn6zbeya-uc.a.run.app/
+
+
+## To Do
+* [ ] get csrf token at server side rendering
