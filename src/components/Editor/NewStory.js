@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { useHistory } from 'react-router-dom';
-import { createEditor, Transforms, Element } from "slate";
+import { createEditor, Transforms, Element, Text } from "slate";
 import {Slate, Editable, withReact} from "slate-react";
 import styled from "styled-components";
 import {CodeElement, DefaultElement, Leaf, LinkElement} from "./EditorElements";
@@ -230,13 +230,21 @@ function NewStory() {
             // localStorage.setItem('content', content)
           }
         }}>
-        <ButtonGroup editor={editor} CustomEditor={CustomEditor}/>
+        <ButtonGroup
+          editor={editor}
+          CustomEditor={CustomEditor}
+        />
         <EditableContainer>
-          <Editable style={{
+          <Editable
+            style={{
               padding: '6px',
               height: '400px',
               overflowY: 'scroll'
-            }} renderLeaf={renderLeaf} renderElement={renderElement} onKeyDown={onKeyDownHandler}/>
+            }}
+            renderLeaf={renderLeaf}
+            renderElement={renderElement}
+            onKeyDown={onKeyDownHandler}
+          />
         </EditableContainer>
       </Slate>
       <ButtonWrapper>
@@ -244,7 +252,7 @@ function NewStory() {
           setIsPublishing(true);
           const result = await publishHandler({
             title,
-            content: JSON.stringify(value),
+            content: value,
             setError,
           })
           if (!result) {

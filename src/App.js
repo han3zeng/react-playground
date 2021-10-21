@@ -9,6 +9,7 @@ import SignUp from './components/SignUp';
 import NoMatch from './components/NoMatch';
 import NewStory from './components/Editor/NewStory';
 import Stories from './components/Stories';
+import Story from './components/Story';
 import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Helmet } from "react-helmet";
@@ -51,7 +52,7 @@ const GlobalStyle = createGlobalStyle`
 
   h1 {
     color: ${props => props.theme.headerColor};
-    font-size: 48px;
+    font-size: 46px;
     line-height: 130%;
     @media(max-width: ${breakpoints.maxTablet}px) {
       font-size: 36px;
@@ -60,7 +61,7 @@ const GlobalStyle = createGlobalStyle`
 
   h2 {
     color: ${props => props.theme.headerColor};
-    font-size: 44px;
+    font-size: 42px;
     line-height: 130%;
     @media(max-width: ${breakpoints.maxTablet}px) {
       font-size: 30px;
@@ -176,6 +177,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/stories">
                   { authenticated ? <Stories csrfToken={csrfToken} />  : <Redirect to='/' />}
+                </Route>
+                <Route path="/story">
+                  { authenticated ? <Story csrfToken={csrfToken} />  : <Redirect to='/' />}
                 </Route>
                 <Route path="*">
                   <NoMatch />

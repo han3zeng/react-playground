@@ -93,9 +93,42 @@ const getStories = async ({
   }
 }
 
+const getStory = async ({
+  csrfToken,
+  storyId
+}) => {
+  if (!csrfToken || !storyId) {
+    return undefined;
+  }
+  const option = {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'CSRF-Token': csrfToken,
+    },
+    referrerPolicy: 'no-referrer',
+    credentials: 'include',
+    body: JSON.stringify({
+      storyId,
+    })
+  }
+  try {
+    const response = await fetch(`${resourceServerOrigin}/story/get-one`, option);
+    const result = await response.json();
+    const { ok, message, story } = result;
+    if (response.status === 200 && ok) {
+      return story;
+    }
+  } catch(e) {
+    console.log('get story error: ', e);
+  }
+}
+
 export {
   createStory,
   deleteStory,
   getCSRFToken,
-  getStories
+  getStories,
+  getStory
 }

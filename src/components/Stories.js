@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { getStories } from '../api';
+import { useLocation, useHistory } from 'react-router-dom';
+import { story } from '../utils';
 
 const ContentContainer = styled.div`
   display: flex;
@@ -10,6 +12,7 @@ const ContentContainer = styled.div`
 const Row = styled.div`
   border-bottom: 1px solid rgb(230 230 230);
   padding: 10px;
+  cursor: pointer;
 `;
 
 const Title = styled.div`
@@ -21,6 +24,12 @@ function Stories({
   csrfToken
 }) {
   const [ stories, setStories] = useState(null);
+  const history = useHistory();
+  const onClickTitleHandler = (data) => {
+    const path = story.generateStoryPath(data);
+    history.push(`/story/${path}`);
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await getStories({
@@ -39,7 +48,13 @@ function Stories({
         <ContentContainer
           key={storyId}
         >
-          <Row><Title>{title}</Title></Row>
+          <Row
+            onClick={() => {
+              onClickTitleHandler({ storyId, title })
+            }}
+          >
+            <Title>{title}</Title>
+          </Row>
         </ContentContainer>
       )
     })

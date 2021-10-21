@@ -48,7 +48,10 @@ const LinkElement = (props) => {
   const { element, attributes } = props;
   return (
     <A
-      {...attributes} href={element.url}
+      {...attributes}
+      href={element.url}
+      target="_blank"
+      rel="noreferrer"
     >
       {props.children}
     </A>
