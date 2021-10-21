@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { AuthenticationContext } from '../contexts';
@@ -69,9 +69,12 @@ const signedLinks = [
 
 function Navigation () {
   const location = useLocation();
-  const defaultTabData = signedLinks.find(element => element.path === location.pathname);
-  const defaultTabId = defaultTabData ? defaultTabData.id : '';
-  const [ tab, setTab ] = useState(defaultTabId);
+  const [ tab, setTab ] = useState('');
+  useEffect(() => {
+    const tabData = signedLinks.find(element => element.path === location.pathname);
+    const tabId =  tabData ? tabData.id : '';
+    setTab(tabId)
+  }, [location])
   return (
     <AuthenticationContext.Consumer>
       {
