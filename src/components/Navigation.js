@@ -3,20 +3,37 @@ import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { AuthenticationContext } from '../contexts';
 
-const StyledLink  = styled(Link)`
-  position: relative;
-  &:after {
-    transition: opacity 0.3s ease-in-out;
-    content: '';
-    position: absolute;
-    bottom: -3px;
-    left: 0;
-    height: 1px;
-    width: 100%;
-    background-color: ${props => props.theme.buttonColor};
-    opacity: ${props => props.isShowing ? '1' : '0'};
+const StyledLinkWrapper  = styled.span`
+  a {
+    position: relative;
+    &:after {
+      transition: opacity 0.3s ease-in-out;
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      height: 1px;
+      width: 100%;
+      background-color: ${props => props.theme.buttonColor};
+      opacity: ${props => props.isShowing ? '1' : '0'};
+    }
   }
 `;
+
+const StyledLink = (props) => {
+  const { to, children } = props;
+  return (
+    <StyledLinkWrapper
+      {...props}
+    >
+      <Link
+        to={to}
+      >
+        {children}
+      </Link>
+    </StyledLinkWrapper>
+  )
+}
 
 const Container = styled.div`
   width: 100%;
@@ -32,7 +49,7 @@ const Nav = styled.nav`
 `
 
 const LeftDivision = styled.div`
-  > a:not(:last-child) {
+  span:not(:last-child) {
     margin-right: 20px;
   }
 `

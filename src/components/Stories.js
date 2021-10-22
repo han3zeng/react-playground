@@ -35,7 +35,9 @@ function Stories({
       const data = await getStories({
         csrfToken,
       });
-      setStories(data);
+      if (data) {
+        setStories(data);
+      }
     }
     fetchData();
   }, [csrfToken])

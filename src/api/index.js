@@ -89,6 +89,7 @@ const getStories = async ({
       return stories;
     }
   } catch(e) {
+    return undefined;
     console.log('get stories error: ', e);
   }
 }
