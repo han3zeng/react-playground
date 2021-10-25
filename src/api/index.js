@@ -46,7 +46,7 @@ const createStory = async ({
     const response = await fetch(`${resourceServerOrigin}/story/create`, option);
     const result = await response.json();
     const { ok, message } = result;
-    if (response.status === 200 && ok) {
+    if (response.status === 201 && ok) {
       return {
         ok: true,
       }
