@@ -17,7 +17,20 @@ import { breakpoints } from "./config";
 import { AuthenticationContext } from './contexts';
 import constants from './constants';
 import config from './config';
+import { setContext } from '@apollo/client/link/context';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink
+} from "@apollo/client";
 const { resourceServerOrigin } = config;
+
+
+const httpLink = createHttpLink({
+  uri: `${resourceServerOrigin}/graphql`,
+  credentials: 'include',
+});
 
 
 const theme = {
@@ -147,7 +160,22 @@ class App extends React.Component {
 
   render() {
     const { authenticated, csrfToken } = this.state;
+    const authLink = setContext((_, { headers }) => {
+      return {
+        headers: {
+          'Content-Type': 'application/json',
+          'CSRF-Token': csrfToken,
+        }
+      }
+    })
+    const client = new ApolloClient({
+      link: authLink.concat(httpLink),
+      cache: new InMemoryCache()
+    });
     return (
+      <ApolloProvider
+        client={client}
+      >
       <ThemeProvider theme={theme}>
         <Helmet>
           <meta name="csrf-token" content={csrfToken} />
@@ -190,6 +218,7 @@ class App extends React.Component {
         </Router>
         <GlobalStyle />
       </ThemeProvider>
+      </ApolloProvider>
     );
   }
 }

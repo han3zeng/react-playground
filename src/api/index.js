@@ -1,5 +1,4 @@
 import config from '../config';
-
 const { resourceServerOrigin } = config;
 
 const getCSRFToken = () => {
@@ -131,5 +130,6 @@ export {
   deleteStory,
   getCSRFToken,
   getStories,
-  getStory
+  getStory,
+  getUserProfile
 }

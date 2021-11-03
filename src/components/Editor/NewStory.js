@@ -1,6 +1,6 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useHistory } from 'react-router-dom';
-import { createEditor, Transforms, Element, Text } from "slate";
+import { createEditor, Transforms, Element } from "slate";
 import {Slate, Editable, withReact} from "slate-react";
 import styled from "styled-components";
 import {CodeElement, DefaultElement, Leaf, LinkElement} from "./EditorElements";
