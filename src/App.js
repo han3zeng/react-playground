@@ -15,6 +15,7 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Helmet } from "react-helmet";
 import { breakpoints } from "./config";
 import { AuthenticationContext } from './contexts';
+import DatePicker from 'react-styled-date-picker';
 import constants from './constants';
 import config from './config';
 const { resourceServerOrigin } = config;
@@ -180,6 +181,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/story">
                   { authenticated ? <Story csrfToken={csrfToken} />  : <Redirect to='/' />}
+                </Route>
+                <Route path="/date-picker">
+                  <DatePicker />
                 </Route>
                 <Route path="*">
                   <NoMatch />
