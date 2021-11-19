@@ -27,3 +27,4 @@
 
 ## To Do
 * [ ] get csrf token at server side rendering
+* [ ] PWA
