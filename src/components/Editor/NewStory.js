@@ -6,7 +6,8 @@ import styled from "styled-components";
 import {CodeElement, DefaultElement, Leaf, LinkElement} from "./EditorElements";
 import CustomEditor from './CustomEditor';
 import ButtonGroup from './ButtonGroup';
-import { createStory } from '../../api';
+import { CREATE_STORY, getStories } from '../../api/graphql';
+import { useMutation } from "@apollo/client";
 
 const Container = styled.div`
   position: relative;
@@ -86,24 +87,6 @@ const Row = styled.div`
   align-items: flex-end;
 `
 
-const publishHandler = async ({
-  title,
-  content,
-  setError,
-}) => {
-  if (!title) {
-    setError(true);
-    return {
-      ok: false,
-    }
-  } else {
-    return await createStory({
-      title,
-      content,
-    })
-  }
-}
-
 function NewStory() {
   // const editor = useMemo(() => withReact(createEditor()), []);
   // const initialValue = JSON.parse(localStorage.getItem('content')) || []
@@ -115,9 +98,17 @@ function NewStory() {
   const { isInline, normalizeNode } = editor;
   const [ value, setValue ] = useState(initialValue);
   const [ title, setTitle ] = useState('')
-  const [ isPublishing, setIsPublishing ] = useState(false);
   const [error, setError] = useState(false);
   const history = useHistory();
+
+  const [createStory, { data, loading, error: publishError }] = useMutation(CREATE_STORY, {
+    onCompleted: () => {
+      history.push("/stories");
+    },
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: getStories }]
+  });
+
 
   editor.isInline = element => {
     return element.type === 'link'
@@ -196,10 +187,14 @@ function NewStory() {
     return <Leaf {...props}/>
   }, [])
 
+  if (publishError) {
+    return <div>error!!</div>
+  }
+
   return (
     <Container>
       <Tag
-        isPublishing={isPublishing}
+        isPublishing={loading}
       >
         Publishing...
       </Tag>
@@ -248,19 +243,13 @@ function NewStory() {
         </EditableContainer>
       </Slate>
       <ButtonWrapper>
-        <Save onClick={async () => {
-          setIsPublishing(true);
-          const result = await publishHandler({
-            title,
-            content: value,
-            setError,
-          })
-          if (!result) {
-            setIsPublishing(false);
-          } else {
-            setIsPublishing(false);
-            history.push("/stories");
-          }
+        <Save onClick={() => {
+          createStory({
+            variables: {
+              content: JSON.stringify(value),
+              title,
+            }
+          });
         }}>Publish</Save>
       </ButtonWrapper>
       </EditorContainer>

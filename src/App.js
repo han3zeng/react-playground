@@ -10,6 +10,7 @@ import NoMatch from './components/NoMatch';
 import NewStory from './components/Editor/NewStory';
 import Stories from './components/Stories';
 import Story from './components/Story';
+import ErrorBoundary from './components/ErrorBoundary';
 import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Helmet } from "react-helmet";
@@ -17,21 +18,11 @@ import { breakpoints } from "./config";
 import { AuthenticationContext } from './contexts';
 import constants from './constants';
 import config from './config';
-import { setContext } from '@apollo/client/link/context';
+import client from './api/apollo-client.js';
 import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  createHttpLink
+  ApolloProvider
 } from "@apollo/client";
 const { resourceServerOrigin } = config;
-
-
-const httpLink = createHttpLink({
-  uri: `${resourceServerOrigin}/graphql`,
-  credentials: 'include',
-});
-
 
 const theme = {
   inputBorderColor: '#BEBEBE',
@@ -160,65 +151,55 @@ class App extends React.Component {
 
   render() {
     const { authenticated, csrfToken } = this.state;
-    const authLink = setContext((_, { headers }) => {
-      return {
-        headers: {
-          'Content-Type': 'application/json',
-          'CSRF-Token': csrfToken,
-        }
-      }
-    })
-    const client = new ApolloClient({
-      link: authLink.concat(httpLink),
-      cache: new InMemoryCache()
-    });
     return (
-      <ApolloProvider
-        client={client}
-      >
-      <ThemeProvider theme={theme}>
-        <Helmet>
-          <meta name="csrf-token" content={csrfToken} />
-        </Helmet>
-        <Router>
-          <AuthenticationContext.Provider value={this.state}>
-            <Navigation />
-            <Layout>
-              <Switch>
-                <Route exact path="/">
-                  { authenticated ? <Redirect to='/profile' />  : <Home /> }
-                </Route>
-                <Route path="/sign-in">
-                 { authenticated ? <Redirect to='/profile' />  : <SignIn /> }
-                </Route>
-                <Route path="/login-callback">
-                  <LoginCallback />
-                </Route>
-                <Route path="/sign-up">
-                  <SignUp />
-                </Route>
-                <Route path="/profile">
-                  { authenticated ? <Profile />  : <Redirect to='/' />}
-                </Route>
-                <Route path="/new-story">
-                  { authenticated ? <NewStory />  : <Redirect to='/' />}
-                </Route>
-                <Route path="/stories">
-                  { authenticated ? <Stories csrfToken={csrfToken} />  : <Redirect to='/' />}
-                </Route>
-                <Route path="/story">
-                  { authenticated ? <Story csrfToken={csrfToken} />  : <Redirect to='/' />}
-                </Route>
-                <Route path="*">
-                  <NoMatch />
-                </Route>
-              </Switch>
-            </Layout>
-          </AuthenticationContext.Provider>
-        </Router>
-        <GlobalStyle />
-      </ThemeProvider>
-      </ApolloProvider>
+      <ErrorBoundary>
+        <ApolloProvider
+          client={client}
+        >
+        <ThemeProvider theme={theme}>
+          <Helmet>
+            <meta name="csrf-token" content={csrfToken} />
+          </Helmet>
+          <Router>
+            <AuthenticationContext.Provider value={this.state}>
+              <Navigation />
+              <Layout>
+                <Switch>
+                  <Route exact path="/">
+                    { authenticated ? <Redirect to='/profile' />  : <Home /> }
+                  </Route>
+                  <Route path="/sign-in">
+                   { authenticated ? <Redirect to='/profile' />  : <SignIn /> }
+                  </Route>
+                  <Route path="/login-callback">
+                    <LoginCallback />
+                  </Route>
+                  <Route path="/sign-up">
+                    <SignUp />
+                  </Route>
+                  <Route path="/profile">
+                    { authenticated ? <Profile />  : <Redirect to='/' />}
+                  </Route>
+                  <Route path="/new-story">
+                    { authenticated ? <NewStory />  : <Redirect to='/' />}
+                  </Route>
+                  <Route path="/stories">
+                    { authenticated ? <Stories csrfToken={csrfToken} />  : <Redirect to='/' />}
+                  </Route>
+                  <Route path="/story">
+                    { authenticated ? <Story csrfToken={csrfToken} />  : <Redirect to='/' />}
+                  </Route>
+                  <Route path="*">
+                    <NoMatch />
+                  </Route>
+                </Switch>
+              </Layout>
+            </AuthenticationContext.Provider>
+          </Router>
+          <GlobalStyle />
+        </ThemeProvider>
+        </ApolloProvider>
+      </ErrorBoundary>
     );
   }
 }

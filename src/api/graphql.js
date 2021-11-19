@@ -26,3 +26,13 @@ query {
   },
 }
 `
+
+export const CREATE_STORY = gql`
+mutation CreateStory($content: String!, $title: String!) {
+  createStory(content: $content, title: $title) {
+    storyId,
+    message,
+    ok
+  }
+}
+`

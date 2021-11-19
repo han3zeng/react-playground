@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useHistory } from 'react-router-dom';
 import { story } from '../utils';
 import Loading from './Loading';
+import Error from './Error';
 import { getStories } from '../api/graphql';
 import {
   useQuery,
@@ -39,8 +40,11 @@ function Stories({
     const path = story.generateStoryPath(data);
     history.push(`/story/${path}`);
   }
+
+  if (error) return <Error />;
+  if (loading) return <LoadingContainer><Loading /></LoadingContainer>;
+
   const content = () => {
-    if (loading) return <LoadingContainer><Loading /></LoadingContainer>;
     const stories = data?.getStories.stories;
     return stories?.map(({
       title,
@@ -61,8 +65,6 @@ function Stories({
       )
     })
   }
-
-  if (error) return <p>Error :(</p>;
   return (
     <div>
       <h2>Your Stories</h2>

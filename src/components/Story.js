@@ -8,6 +8,7 @@ import { story as storyTool } from '../utils';
 import { Leaf, DefaultElement, LinkElement, CodeElement } from './Editor/EditorElements';
 import { getStory } from '../api/graphql';
 import Loading from './Loading';
+import Error from './Error';
 import {
   useQuery,
 } from "@apollo/client";
@@ -73,6 +74,9 @@ function Story({
 
   const { content, title } = data?.getStory || DefaultData;
   const Content = JSON.parse(content)?.map(serialize);
+
+  if (error) return <Error />;
+
   return (
     <Container>
       <h1>{title}</h1>
