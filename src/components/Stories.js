@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from "styled-components";
-import { getStories } from '../api';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { story } from '../utils';
+import Loading from './Loading';
+import { getStories } from '../api/graphql';
+import {
+  useQuery,
+} from "@apollo/client";
+
+const LoadingContainer = styled.div`
+  display: flex;
+  margin-top: 100px;
+  justify-content: center;
+`;
 
 const ContentContainer = styled.div`
   display: flex;
@@ -23,25 +33,15 @@ const Title = styled.div`
 function Stories({
   csrfToken
 }) {
-  const [ stories, setStories] = useState(null);
+  const { loading, error, data } = useQuery(getStories);
   const history = useHistory();
   const onClickTitleHandler = (data) => {
     const path = story.generateStoryPath(data);
     history.push(`/story/${path}`);
   }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getStories({
-        csrfToken,
-      });
-      if (data) {
-        setStories(data);
-      }
-    }
-    fetchData();
-  }, [csrfToken])
   const content = () => {
+    if (loading) return <LoadingContainer><Loading /></LoadingContainer>;
+    const stories = data?.getStories.stories;
     return stories?.map(({
       title,
       storyId
@@ -61,6 +61,8 @@ function Stories({
       )
     })
   }
+
+  if (error) return <p>Error :(</p>;
   return (
     <div>
       <h2>Your Stories</h2>
