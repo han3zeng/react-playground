@@ -10,7 +10,6 @@ import NoMatch from './components/NoMatch';
 import NewStory from './components/Editor/NewStory';
 import Stories from './components/Stories';
 import Story from './components/Story';
-import ErrorBoundary from './components/ErrorBoundary';
 import { Switch, Route, BrowserRouter as Router, Redirect } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Helmet } from "react-helmet";
@@ -147,15 +146,17 @@ class App extends React.Component {
         csrfToken,
       })
     })
+    .catch((e) => {
+      console.log('e: ', e)
+    })
   }
 
   render() {
     const { authenticated, csrfToken } = this.state;
     return (
-      <ErrorBoundary>
-        <ApolloProvider
-          client={client}
-        >
+      <ApolloProvider
+        client={client}
+      >
         <ThemeProvider theme={theme}>
           <Helmet>
             <meta name="csrf-token" content={csrfToken} />
@@ -198,8 +199,7 @@ class App extends React.Component {
           </Router>
           <GlobalStyle />
         </ThemeProvider>
-        </ApolloProvider>
-      </ErrorBoundary>
+      </ApolloProvider>
     );
   }
 }
