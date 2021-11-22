@@ -27,6 +27,15 @@ query {
 }
 `
 
+export const DELETE_STORY = gql`
+mutation DeleteStory($storyId: String!) {
+  deleteStory(storyId: $storyId) {
+    message,
+    ok
+  }
+}
+`
+
 export const CREATE_STORY = gql`
 mutation CreateStory($content: String!, $title: String!) {
   createStory(content: $content, title: $title) {
