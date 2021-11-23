@@ -6,7 +6,7 @@ import styled from "styled-components";
 import {CodeElement, DefaultElement, Leaf, LinkElement} from "./EditorElements";
 import CustomEditor from './CustomEditor';
 import ButtonGroup from './ButtonGroup';
-import { CREATE_STORY, getStories } from '../../api/graphql';
+import { CREATE_STORY, GET_STORIES } from '../../api/graphql';
 import { useMutation } from "@apollo/client";
 
 const Container = styled.div`
@@ -106,7 +106,7 @@ function NewStory() {
       history.push("/stories");
     },
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: getStories }]
+    refetchQueries: [{ query: GET_STORIES }]
   });
 
 

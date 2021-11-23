@@ -2,8 +2,8 @@ import {
   gql
 } from "@apollo/client";
 
-export const getStories = gql`
-query {
+export const GET_STORIES = gql`
+query GetStories{
   getStories {
     id,
     userId,

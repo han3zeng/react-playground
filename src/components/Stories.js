@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { story } from '../utils';
 import Loading from './Loading';
 import Error from './Error';
-import { getStories, DELETE_STORY } from '../api/graphql';
+import { GET_STORIES, DELETE_STORY } from '../api/graphql';
 import {
   useQuery,
   useMutation,
@@ -41,7 +41,7 @@ const Delete = styled.button`
 function Stories({
   csrfToken
 }) {
-  const { loading: getLoading, error: getError, data } = useQuery(getStories);
+  const { loading: getLoading, error: getError, data } = useQuery(GET_STORIES);
   const history = useHistory();
 
   const [deleteStory, { loading: deleteLoading, error: deleteError }] = useMutation(DELETE_STORY, {
@@ -49,7 +49,7 @@ function Stories({
       history.push("/stories");
     },
     awaitRefetchQueries: true,
-    refetchQueries: [{ query: getStories }]
+    refetchQueries: [{ query: GET_STORIES }]
   });
 
   const onClickTitleHandler = (data) => {
@@ -71,7 +71,7 @@ function Stories({
   if (getLoading || deleteLoading) return <LoadingContainer><Loading /></LoadingContainer>;
 
   const content = () => {
-    const stories = data?.getStories.stories;
+    const stories = data?.getStories?.stories;
     return stories?.map(({
       title,
       storyId

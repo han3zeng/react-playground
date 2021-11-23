@@ -4,7 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 import { setupServer } from 'msw/node'
-import { handlers } from './mocks/handlers'
+import { handlers } from './_mocks_/handlers'
 
 const server = setupServer(...handlers)
 // Establish API mocking before all tests.
