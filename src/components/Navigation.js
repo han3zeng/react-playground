@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 import styled from 'styled-components';
 import { AuthenticationContext } from '../contexts';
 
-const StyledLinkWrapper  = styled.span`
+const StyledLinkWrapper = styled.span`
   a {
     position: relative;
     &:after {
@@ -14,20 +15,20 @@ const StyledLinkWrapper  = styled.span`
       left: 0;
       height: 1px;
       width: 100%;
-      background-color: ${props => props.theme.buttonColor};
-      opacity: ${props => props.isShowing ? '1' : '0'};
+      background-color: ${(props) => props.theme.buttonColor};
+      opacity: ${(props) => (props.isShowing ? '1' : '0')};
     }
   }
 `;
 
 const StyledLink = (props) => {
-  const { to, children } = props;
+  const { href, children } = props;
   return (
     <StyledLinkWrapper
       {...props}
     >
       <Link
-        to={to}
+        href={href}
       >
         {children}
       </Link>
@@ -84,45 +85,46 @@ const signedLinks = [
   }
 ]
 
-function Navigation () {
-  const location = useLocation();
-  const [ tab, setTab ] = useState('');
+function Navigation() {
+  const router = useRouter();
+  const [tab, setTab] = useState('');
   useEffect(() => {
-    const tabData = signedLinks.find(element => element.path === location.pathname);
-    const tabId =  tabData ? tabData.id : '';
-    setTab(tabId)
-  }, [location])
+    const tabData = signedLinks.find((element) => element.path === router.pathname);
+    const tabId = tabData ? tabData.id : '';
+    setTab(tabId);
+  }, [router]);
   return (
     <AuthenticationContext.Consumer>
       {
         ({ authenticated, toggleAuthenticated }) => {
           const signOutHandler = () => {
             toggleAuthenticated(false);
-          }
+          };
           const User = authenticated ? (
             <Button onClick={() => {
               signOutHandler();
-            }}>
+            }}
+            >
               Sign out
             </Button>
           ) : (
             <StyledLink
-              to="/sign-in"
+              href="/sign-in"
             >
               Sign in
             </StyledLink>
-          )
-          const linkData = authenticated ? signedLinks : defaultLinks ;
+          );
+          const linkData = authenticated ? signedLinks : defaultLinks;
           const Links = linkData.map(({
             path,
             label,
-            id
+            id,
           }) => (
             <StyledLink
               key={`${path}`}
-              to={`${path}`}
+              href={`${path}`}
               onClick={() => {
-                setTab(id)
+                setTab(id);
               }}
               isShowing={tab === id}
             >
