@@ -13,8 +13,7 @@
     "react/jsx-filename-extension": "off",
     "react/prop-types": "off",
     "react/jsx-props-no-spreading": "off",
-    "react/react-in-jsx-scope": "off",
-    "quotes": ["error", "double"]
+    "react/react-in-jsx-scope": "off"
   },
   "parserOptions": {
     "ecmaVersion": 2020
