@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import InputRow from '../InputRow';
 import useForm from '../../hooks/useForm';
 import styled from 'styled-components';
 import config from '../../config';
 import { AuthenticationContext } from '../../contexts';
 const { authServerOrigin } = config;
+import { PATH } from '../../constants'
 
 const Button = styled.button`
   font-size: 18px;
@@ -28,22 +29,22 @@ const Error = styled.div`
 
 function Password () {
   const authentication = useContext(AuthenticationContext);
-  const history = useHistory();
+  const router = useRouter();
   const {
     form,
     error,
     onHandleInput,
     onSubmitHandler,
     stages,
-    stage
-  } = useForm()
+    stage,
+  } = useForm();
 
   const allowed = !error.email && !error.password && !!form.email && !!form.password;
 
   const onSubmitCallBack = () => {
     authentication.toggleAuthenticated(true);
-    history.push('/profile');
-  }
+    router.push(`/${PATH.profile}`);
+  };
 
   return (
     <>

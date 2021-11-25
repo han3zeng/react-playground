@@ -6,6 +6,8 @@ const loginServices = {
 
 export const PATH = {
   profile: 'profile',
+  signIn: 'sign-in',
+  signUp: 'sign-up',
 };
 
 const index = {

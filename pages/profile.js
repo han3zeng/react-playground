@@ -36,7 +36,7 @@ function Profile() {
       router.push('/');
     }
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-    setProfile(userProfile);
+    if (userProfile) setProfile(userProfile);
   }, [authenticated, router]);
 
   const { name, email, avatarURL } = profile;

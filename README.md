@@ -28,3 +28,4 @@
 ## To Do
 * [ ] get csrf token at server side rendering
 * [ ] PWA
+* [ ] authentication front-end flow redesign

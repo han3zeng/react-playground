@@ -1,5 +1,5 @@
-import OAuth from './OAuth';
 import styled from 'styled-components';
+import OAuth from './OAuth';
 import Password from './Password';
 
 const H2 = styled.h2`
@@ -19,7 +19,7 @@ const Divider = styled.div`
   margin: 30px 0;
 `;
 
-function SignIn () {
+function SignIn() {
   return (
     <>
       <H2>Sign In</H2>
@@ -29,6 +29,6 @@ function SignIn () {
         <OAuth />
       </Container>
     </>
-  )
+  );
 }
 export default SignIn;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import config from '../../config';
 import constants from '../../constants';
@@ -163,7 +163,7 @@ class Login extends Component {
               this.onClickHandler(constants.GITHUB)
             }}
           >
-            <img src={githubLogo} alt="github logo" />
+            <img src={githubLogo.src} alt="github logo" />
             <span>Sgin in with Github</span>
           </GithubButton>
           <GoogleButton
@@ -171,12 +171,12 @@ class Login extends Component {
               this.onClickHandler(constants.GOOGLE)
             }}
           >
-            <img src={googleLogo} alt="google logo" />
+            <img src={googleLogo.src} alt="google logo" />
             <span>Sign in with Google</span>
           </GoogleButton>
         </OAuthContainer>
         <div>
-          New to the service ? <Link to="/sign-up">Create an account</Link>
+          New to the service ? <Link href="/sign-up">Create an account</Link>
         </div>
       </Container>
     )

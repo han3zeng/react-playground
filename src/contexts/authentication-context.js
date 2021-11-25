@@ -12,22 +12,21 @@ function AuthProvider({
   children,
 }) {
   const [authenticated, setAuthentication] = useState(false);
-  const toggleAuthenticated = () => {
-    setAuthentication((value) => {
-      if (!value) {
-        localStorage.removeItem(constants.USER_PRPFILE);
-        fetch(`${resourceServerOrigin}/user/signout`, {
-          method: 'GET',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          referrerPolicy: 'no-referrer',
-          credentials: 'include',
-        });
-      }
-      return false;
-    });
+  const toggleAuthenticated = (value) => {
+    setAuthentication(value);
+    if (!value) {
+      localStorage.removeItem(constants.USER_PRPFILE);
+      fetch(`${resourceServerOrigin}/user/signout`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        referrerPolicy: 'no-referrer',
+        credentials: 'include',
+      });
+    }
+    return false;
   };
 
   useEffect(() => {
