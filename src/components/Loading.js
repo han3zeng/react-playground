@@ -26,10 +26,10 @@ const Container = styled.div`
 `;
 
 
-function Loading () {
+function Loading() {
   return (
     <Container>
-      <img src={refreshIcon} alt="loading icon" />
+      <img src={refreshIcon.src} alt="loading icon" />
     </Container>
   )
 }

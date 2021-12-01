@@ -146,7 +146,7 @@ class Login extends Component {
       })();
       return new URLSearchParams(result);
     })();
-    sessionStorage.setItem(constants.CSRF_KEY, this.csrfKey)
+    sessionStorage.setItem(constants.REDIRECT_CSRF_KEY, this.csrfKey)
     window.location.href = `${baseURL}?${params}`
   }
 

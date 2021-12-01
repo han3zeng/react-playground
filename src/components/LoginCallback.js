@@ -1,11 +1,17 @@
-import React, { useEffect, useContext, memo, useState } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import React, {
+  useEffect,
+  useContext,
+  memo,
+  useState,
+} from 'react';
+import styled, { keyframes } from 'styled-components';
+import { useRouter } from 'next/router';
 import config from '../config';
 import { AuthenticationContext } from '../contexts';
-import constants from '../constants';
+import constants, { PATH } from '../constants';
 import refreshIcon from '../assets/refresh-icon.svg';
-import styled, { keyframes } from 'styled-components';
 import { form } from '../utils';
+import Loading from './Loading';
 
 const { signIn } = form;
 const {
@@ -13,7 +19,7 @@ const {
   githubClientId,
   origin,
   redirectPath,
-  googleCleintId
+  googleCleintId,
 } = config;
 
 const redirectUrl = `${origin}/${redirectPath}`;
@@ -22,13 +28,12 @@ const {
   GITHUB,
   GOOGLE,
   ACCOUNT,
-  CSRF_KEY,
+  REDIRECT_CSRF_KEY,
 } = constants;
 const stages = {
   loading: 'loading',
-  error: 'error'
-}
-
+  error: 'error',
+};
 
 const rotate = keyframes`
   fromm {
@@ -37,38 +42,33 @@ const rotate = keyframes`
   to {
     transform: rotate(360deg);
   }
-`
+`;
 
 const Container = styled.div`
   display: flex;
   justify-content: center;
   padding-top: 100px;
-`
-
-const Loading = styled.div`
-  animation: ${rotate} 2s linear infinite;
 `;
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 function LoginCallback() {
-  const query = useQuery();
-  const history = useHistory();
+  const router = useRouter();
+  const { isReady, query } = router;
   const authentication = useContext(AuthenticationContext);
   const [stage, setStage] = useState('loading');
   useEffect(() => {
-    let stateObject = {}
-    const code = query.get('code')
+    let stateObject = {};
+    if (!isReady) {
+      return;
+    }
+    const { code, state } = query;
     try {
-      stateObject = JSON.parse(decodeURIComponent(query.get('state')))
+      stateObject = JSON.parse(decodeURIComponent(state))
     } catch (e) {
 
     }
     const { csrfKey, service } = stateObject;
-    if (sessionStorage.getItem(CSRF_KEY) && (csrfKey !== sessionStorage.getItem(CSRF_KEY))) {
-      history.push("/login?errorType=inconsistentState");
+    if (sessionStorage.getItem(REDIRECT_CSRF_KEY) && (csrfKey !== sessionStorage.getItem(REDIRECT_CSRF_KEY))) {
+      router.push(`${PATH.signIn}/?errorType=inconsistentState`);
       return;
     }
     const params = (() => {
@@ -112,31 +112,29 @@ function LoginCallback() {
             const { accessToken, ok } = data;
             if (ok) {
               signIn({
-                accessToken
+                accessToken,
               })
-              .then(() => {
-                authentication.toggleAuthenticated(true);
-                history.push('/profile');
-              })
-              .catch(() => {
-
-              })
+                .then(() => {
+                  authentication.toggleAuthenticated(true);
+                  router.push(`/${PATH.profile}`);
+                })
+                .catch((e) => {
+                  console.log('e: ', e);
+                });
             } else {
-              setStage(stages.error)
+              setStage(stages.error);
             }
-          })
+          });
       })
       .catch(() => {
         console.log('error')
       })
-  }, [])
+  }, [isReady]);
   const content = () => {
     if (stage === stages.loading) {
       return (
-        <Loading>
-          <img src={refreshIcon} />
-        </Loading>
-      )
+        <Loading />
+      );
     } else if (stage === stages.error)
       return (
         <p>Invalid auth code</p>

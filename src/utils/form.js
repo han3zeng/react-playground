@@ -6,7 +6,7 @@ const {
   resourceServerOrigin,
 } = config;
 const {
-  CSRF_KEY,
+  REDIRECT_CSRF_KEY,
   USER_PRPFILE
 } = constants;
 
@@ -47,7 +47,7 @@ const signIn = ({ accessToken }) => {
             if (ok) {
               const { name, email, avatarURL, sub } = data
               localStorage.setItem(USER_PRPFILE, JSON.stringify({ name, email, avatarURL, sub }));
-              sessionStorage.removeItem(CSRF_KEY)
+              sessionStorage.removeItem(REDIRECT_CSRF_KEY)
               resolve();
             } else {
               console.log('error message: ', message)

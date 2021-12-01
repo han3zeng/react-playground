@@ -1,7 +1,10 @@
-import { createGlobalStyle, ThemeProvider } from "styled-components";
+import { useEffect, useState } from 'react';
+import Head from 'next/head';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { AuthProvider } from '../src/contexts';
 import Navigation from '../src/components/Navigation';
-import { breakpoints } from "../src/config";
+import config, { breakpoints } from '../src/config';
+const { resourceServerOrigin } = config;
 
 const theme = {
   inputBorderColor: "#BEBEBE",
@@ -81,8 +84,30 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function MyApp({ Component, pageProps }) {
+  const [csrfToken, setCSRFToken] = useState(null);
+  useEffect(() => {
+    fetch(`${resourceServerOrigin}/initialization`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        const { csrfToken } = data;
+        setCSRFToken(csrfToken);
+      })
+      .catch((e) => {
+        console.log('e: ', e);
+      })
+  }, []);
   return (
     <>
+      <Head>
+        <meta name="csrf-token" content={csrfToken} />
+      </Head>
       <AuthProvider>
         <ThemeProvider theme={theme}>
           <Navigation />

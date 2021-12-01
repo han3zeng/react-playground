@@ -16,7 +16,7 @@ function AuthProvider({
     setAuthentication(value);
     if (!value) {
       localStorage.removeItem(constants.USER_PRPFILE);
-      fetch(`${resourceServerOrigin}/user/signout`, {
+      fetch(`${resourceServerOrigin}/user/sign-out`, {
         method: 'GET',
         mode: 'cors',
         headers: {

@@ -11,7 +11,7 @@ export const PATH = {
 };
 
 const index = {
-  CSRF_KEY: 'csrfKey',
+  REDIRECT_CSRF_KEY: 'redirectCSRFKey',
   USER_PRPFILE: 'userProfile',
   ...loginServices,
 };
