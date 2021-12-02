@@ -1,20 +1,24 @@
 import { useEffect, useState } from 'react';
+import { ApolloProvider } from '@apollo/client';
 import Head from 'next/head';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { AuthProvider } from '../src/contexts';
 import Navigation from '../src/components/Navigation';
+import Layout from '../src/components/Layout';
+import client from '../src/api/apollo-client';
 import config, { breakpoints } from '../src/config';
+
 const { resourceServerOrigin } = config;
 
 const theme = {
-  inputBorderColor: "#BEBEBE",
-  buttonColor: "#326891",
-  sectionMargin: "68px",
-  pageMargin: "20px;",
-  headerColor: "#121212",
-  contentColor: "#333333",
-  captionColor: "#666666",
-  fontFamily: "-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji",
+  inputBorderColor: '#BEBEBE',
+  buttonColor: '#326891',
+  sectionMargin: '68px',
+  pageMargin: '20px;',
+  headerColor: '#121212',
+  contentColor: '#333333',
+  captionColor: '#666666',
+  fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
 };
 
 const GlobalStyle = createGlobalStyle`
@@ -92,12 +96,12 @@ function MyApp({ Component, pageProps }) {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     })
       .then(async (response) => {
         const data = await response.json();
-        const { csrfToken } = data;
-        setCSRFToken(csrfToken);
+        const { csrfToken: token } = data;
+        setCSRFToken(token);
       })
       .catch((e) => {
         console.log('e: ', e);
@@ -108,13 +112,19 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <meta name="csrf-token" content={csrfToken} />
       </Head>
-      <AuthProvider>
-        <ThemeProvider theme={theme}>
-          <Navigation />
-          <Component {...pageProps} />
-          <GlobalStyle />
-        </ThemeProvider>
+      <ApolloProvider
+        client={client}
+      >
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Navigation />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+            <GlobalStyle />
+          </ThemeProvider>
       </AuthProvider>
+      </ApolloProvider>
     </>
   );
 }

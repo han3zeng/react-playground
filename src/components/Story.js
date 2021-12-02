@@ -1,23 +1,21 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import escapeHtml from 'escape-html'
-import { Text } from 'slate'
+import { useRouter } from 'next/router';
+import escapeHtml from 'escape-html';
+import { Text } from 'slate';
 import styled from 'styled-components';
-// import { getStory } from '../api';
+import { useQuery } from '@apollo/client';
 import { story as storyTool } from '../utils';
-import { Leaf, DefaultElement, LinkElement, CodeElement } from './Editor/EditorElements';
+import {
+  Leaf, DefaultElement, LinkElement, CodeElement,
+} from './Editor/EditorElements';
 import { getStory } from '../api/graphql';
 import Loading from './Loading';
 import Error from './Error';
-import {
-  useQuery,
-} from "@apollo/client";
-
 
 const DefaultData = {
   title: '',
   content: '[{"text":""}]',
-}
+};
 
 const Container = styled.div`
   max-width: 680px;
@@ -30,46 +28,28 @@ const LoadingContainer = styled.div`
   justify-content: center;
 `;
 
-const serialize = node => {
+const serialize = (node) => {
   if (Text.isText(node)) {
-    let string = escapeHtml(node.text)
-    return (
-      <Leaf
-        leaf={node}
-      >
-        {string}
-      </Leaf>
-    )
+    const string = escapeHtml(node.text);
+    return <Leaf leaf={node}>{string}</Leaf>;
   }
 
-  const children = node.children.map(n => serialize(n))
+  const children = node.children.map((n) => serialize(n));
 
   switch (node.type) {
     case 'code':
-      return (
-        <CodeElement>
-          {children}
-        </CodeElement>
-      )
+      return <CodeElement>{children}</CodeElement>;
     case 'link':
-      return (
-        <LinkElement
-          element={node}
-        >
-          {children}
-        </LinkElement>
-      )
+      return <LinkElement element={node}>{children}</LinkElement>;
     default:
-      return <DefaultElement>{children}</DefaultElement>
+      return <DefaultElement>{children}</DefaultElement>;
   }
-}
+};
 
-
-function Story({
-  csrfToken
-}) {
-  const location = useLocation();
-  const storyId = storyTool.getStoryIdFromPath({ path: location.pathname });
+function Story() {
+  const router = useRouter();
+  const { storyPath } = router.query
+  const storyId = storyTool.getStoryIdFromPath({ path: storyPath });
   const { loading, error, data } = useQuery(getStory({ storyId }));
 
   const { content, title } = data?.getStory || DefaultData;
@@ -80,9 +60,15 @@ function Story({
   return (
     <Container>
       <h1>{title}</h1>
-      {loading ? <LoadingContainer><Loading /></LoadingContainer> : Content}
+      {loading ? (
+        <LoadingContainer>
+          <Loading />
+        </LoadingContainer>
+      ) : (
+        Content
+      )}
     </Container>
-  )
-};
+  );
+}
 
 export default Story;

@@ -13,7 +13,7 @@ const Container = styled.div`
 `;
 
 
-function Layout ({ children }) {
+function Layout({ children }) {
   return (
     <Container>
       {children}
