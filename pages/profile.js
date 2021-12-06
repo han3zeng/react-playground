@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import useAuth from '../src/hooks/useAuth';
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
+import useAuth from '../src/hooks/useAuth';
+import { _ } from '../src/utils';
 import userIcon from '../src/assets/user.svg';
+
+const { getCookies } = _;
 
 const Container = styled.div`
   display: flex;
@@ -24,26 +26,34 @@ const Content = styled.div`
 `;
 
 function Profile() {
-  const { authenticated } = useAuth();
-  const router = useRouter();
   const [profile, setProfile] = useState({
     name: '',
     email: '',
     avatarURL: '',
   });
-  useEffect(() => {
-    if (!authenticated) {
-      router.push('/');
-    }
-    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-    if (userProfile) setProfile(userProfile);
-  }, [authenticated, router]);
-
   const { name, email, avatarURL } = profile;
+
+  useEffect(() => {
+    const cookies = getCookies();
+    let userProfile = cookies && cookies['user-profile'];
+    try {
+      userProfile = userProfile ? JSON.parse(userProfile) : undefined;
+      if (userProfile) {
+        setProfile({
+          name: userProfile.name,
+          email: userProfile.email,
+          avatarURL: userProfile.avatarURL,
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
   return (
     <Container>
       <Content>
-        <img src={avatarURL || userIcon} alt={`${name} user profile`} />
+        <img src={avatarURL || userIcon.src} alt={`${name} user profile`} />
         <div>{`name: ${name}`}</div>
         <div>{`email: ${email}`}</div>
       </Content>

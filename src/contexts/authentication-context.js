@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import constants from '../constants';
+import { useRouter } from 'next/router';
 import config from '../config';
+import { _ } from '../utils';
+
 const { resourceServerOrigin } = config;
+const { getCookies } = _;
 
 const AuthenticationContext = React.createContext({
+  isLoading: true,
   authenticated: false,
   toggleAuthenticated: () => {},
 });
@@ -12,11 +16,12 @@ function AuthProvider({
   children,
 }) {
   const [authenticated, setAuthentication] = useState(false);
-  const toggleAuthenticated = (value) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const toggleAuthenticated = async (value) => {
     setAuthentication(value);
     if (!value) {
-      localStorage.removeItem(constants.USER_PRPFILE);
-      fetch(`${resourceServerOrigin}/user/sign-out`, {
+      await fetch(`${resourceServerOrigin}/user/sign-out`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -25,12 +30,18 @@ function AuthProvider({
         referrerPolicy: 'no-referrer',
         credentials: 'include',
       });
+      router.push('/');
     }
-    return false;
   };
 
   useEffect(() => {
-    setAuthentication(document ? !!localStorage.getItem(constants.USER_PRPFILE) : false);
+    const cookies = getCookies();
+    if (cookies && cookies['user-profile'] !== undefined) {
+      setIsLoading(false);
+      setAuthentication(true);
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   return (
@@ -38,6 +49,7 @@ function AuthProvider({
       value={{
         authenticated,
         toggleAuthenticated,
+        isLoading,
       }}
     >
       {children}

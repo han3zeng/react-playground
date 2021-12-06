@@ -123,7 +123,7 @@ function MyApp({ Component, pageProps }) {
             </Layout>
             <GlobalStyle />
           </ThemeProvider>
-      </AuthProvider>
+        </AuthProvider>
       </ApolloProvider>
     </>
   );

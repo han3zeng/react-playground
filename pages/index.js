@@ -1,9 +1,4 @@
-import { useEffect } from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/router'
-import useAuth from '../src/hooks/useAuth';;
-import { PATH } from '../src/constants';
-
 
 const Container = styled.div`
   p {
@@ -12,14 +7,6 @@ const Container = styled.div`
 `;
 
 function Home() {
-  const router = useRouter();
-  const { authenticated } = useAuth();
-  useEffect(() => {
-    if (authenticated) {
-      router.push(`/${PATH.profile}`);
-    }
-  }, [router, authenticated]);
-
   return (
     <Container>
       <h3>Overview</h3>
@@ -38,5 +25,22 @@ function Home() {
     </Container>
   );
 }
+
+// export async function getServerSideProps(context) {
+//   const {
+//     req,
+//   } = context;
+//   const { cookies } = req;
+//   const userProfile = cookies['user-profile'];
+//   if (userProfile) {
+//     return {
+//       redirect: {
+//         destination: '/profile',
+//         permanent: false,
+//       },
+//     };
+//   }
+//   return { props: {} };
+// }
 
 export default Home;

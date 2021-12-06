@@ -5,5 +5,5 @@ import * as _ from './miscellaneous.ts';
 export {
   form,
   _,
-  story
-}
+  story,
+};
