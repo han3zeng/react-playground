@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider } from '@apollo/client/testing';
 import { GET_STORIES } from '../api/graphql';
 import Stories from './Stories';
@@ -18,7 +17,7 @@ const mocks = [
             {
               storyId: 'test-story-id',
               title: 'test-title',
-            }
+            },
           ],
         },
       },
@@ -31,6 +30,6 @@ test('renders Stories.js without error', async () => {
     <MockedProvider mocks={mocks} addTypename={false}>
       <Stories csrfToken="test-csrf-token" />
     </MockedProvider>
-  ), { wrapper: MemoryRouter });
+  ));
   expect(await screen.findByText(/test-title/)).toBeInTheDocument();
 });
