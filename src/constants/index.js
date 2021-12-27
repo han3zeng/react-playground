@@ -9,7 +9,7 @@ export const PATH = {
   signIn: 'sign-in',
   signUp: 'sign-up',
   stories: 'stories',
-  story: 'story',
+  newStory: 'new-story',
 };
 
 const index = {

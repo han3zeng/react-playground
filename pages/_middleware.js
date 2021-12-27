@@ -1,15 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PATH } from '../src/constants';
+
 const {
   profile,
-  signIn,
-  signUp,
   stories,
-  story,
+  newStory,
 } = PATH;
 
-
-const authedPath = [profile, stories, story];
+const authedPath = [profile, stories, newStory];
 
 export function middleware(req) {
   const { cookies } = req;
