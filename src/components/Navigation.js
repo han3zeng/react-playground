@@ -105,6 +105,7 @@ function Navigation() {
   }
 
   const signOutHandler = () => {
+    router.push('/');
     toggleAuthenticated(false);
   };
 
