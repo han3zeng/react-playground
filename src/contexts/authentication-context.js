@@ -5,7 +5,7 @@ import { _ } from '../utils';
 import constants from '../constants';
 
 const { USER_PRPFILE } = constants;
-const { resourceServerOrigin } = config;
+const { resourceServerOrigin, domain } = config;
 const { deleteCookie } = _;
 
 const AuthenticationContext = React.createContext({
@@ -25,6 +25,10 @@ function AuthProvider({
     if (!value) {
       deleteCookie({
         name: 'signIn',
+        options: {
+          domain,
+          path: '/',
+        },
       });
       localStorage.removeItem(USER_PRPFILE);
       await fetch(`${resourceServerOrigin}/user/sign-out`, {

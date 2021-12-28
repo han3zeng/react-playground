@@ -25,7 +25,6 @@ const getCookie = ({ name }) => {
 function setCookie(name, value, options = {}) {
   const finalOptions = {
     path: '/',
-    // add other defaults here if necessary
     ...options,
   };
 
@@ -48,8 +47,9 @@ function setCookie(name, value, options = {}) {
 
 function deleteCookie({
   name,
+  options,
 }) {
-  setCookie(name, '', { 'max-age': -1 });
+  setCookie(name, '', { 'max-age': -1, ...options });
 }
 
 export { getCookie, setCookie, deleteCookie };
