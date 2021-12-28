@@ -6,7 +6,6 @@ import Document, {
 } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
-
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
     const sheet = new ServerStyleSheet();
@@ -36,6 +35,7 @@ class MyDocument extends Document {
       <Html lang="zh-Hant">
         <Head>
           <meta name="title" content="Han's Blog Service" />
+          <link rel="icon" href="/favicon.png" />
         </Head>
         <body>
           <Main />

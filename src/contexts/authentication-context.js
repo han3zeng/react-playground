@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import config from '../config';
 import { _ } from '../utils';
+import constants from '../constants';
 
+const { USER_PRPFILE } = constants;
 const { resourceServerOrigin } = config;
-const { getCookies } = _;
+const { deleteCookie } = _;
 
 const AuthenticationContext = React.createContext({
   isLoading: true,
@@ -21,6 +23,10 @@ function AuthProvider({
   const toggleAuthenticated = async (value) => {
     setAuthentication(value);
     if (!value) {
+      deleteCookie({
+        name: 'signIn',
+      });
+      localStorage.removeItem(USER_PRPFILE);
       await fetch(`${resourceServerOrigin}/user/sign-out`, {
         method: 'GET',
         mode: 'cors',
@@ -35,8 +41,8 @@ function AuthProvider({
   };
 
   useEffect(() => {
-    const cookies = getCookies();
-    if (cookies && cookies['user-profile'] !== undefined) {
+    const userProfile = localStorage.getItem('userProfile');
+    if (userProfile) {
       setIsLoading(false);
       setAuthentication(true);
     } else {

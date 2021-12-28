@@ -67,7 +67,7 @@ const defaultLinks = [
     id: 'home',
     label: 'Home',
     path: '/',
-  }
+  },
 ];
 
 const signedLinks = [

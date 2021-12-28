@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import userIcon from '../assets/user.svg';
 
-
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -22,19 +21,18 @@ const Content = styled.div`
   }
 `;
 
-function Profile () {
+function Profile() {
   const userProfile = JSON.parse(localStorage.getItem('userProfile'));
   const { name, email, avatarURL } = userProfile;
   return (
     <Container>
       <Content>
         <img src={avatarURL || userIcon} alt={`${name} user profile`} />
-        <div>name: {name}</div>
-        <div>email: {email}</div>
+        <div>{`name: ${name}`}</div>
+        <div>{`email: ${email}`}</div>
       </Content>
     </Container>
   );
-};
-
+}
 
 export default Profile;

@@ -12,11 +12,11 @@ const authedPath = [profile, stories, newStory];
 export function middleware(req) {
   const { cookies } = req;
   const { pathname } = req.nextUrl;
-  const userProfile = cookies['user-profile'];
-  if (userProfile && pathname === '/') {
+  const { signIn } = cookies;
+  if (signIn === '1' && pathname === '/') {
     return NextResponse.redirect('/profile');
   }
-  if (!userProfile && (authedPath.indexOf(pathname.split('/')[1]) !== -1)) {
+  if ((signIn !== '1') && (authedPath.indexOf(pathname.split('/')[1]) !== -1)) {
     return NextResponse.redirect('/');
   }
   return NextResponse.next();

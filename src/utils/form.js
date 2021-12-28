@@ -1,14 +1,10 @@
 // import produce from "immer";
 import config from '../config';
 import constants from '../constants';
+import { setCookie } from './miscellaneous';
 
-const {
-  resourceServerOrigin,
-} = config;
-const {
-  REDIRECT_CSRF_KEY,
-  USER_PRPFILE
-} = constants;
+const { resourceServerOrigin, domain } = config;
+const { REDIRECT_CSRF_KEY, USER_PRPFILE } = constants;
 
 const emailValidation = (email) => {
   if (typeof email !== 'string') {
@@ -23,50 +19,56 @@ const passwordPrimitiveValidation = (password) => {
     return false;
   }
   const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/;
-  return (password.length >= 8) && regex.test(password);
-}
+  return password.length >= 8 && regex.test(password);
+};
 
-const signIn = ({ accessToken }) => {
-  return new Promise((resolve, reject) => {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    fetch(`${resourceServerOrigin}/user/sign-in`, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-        'CSRF-Token': csrfToken,
-      },
-      referrerPolicy: 'no-referrer',
-      credentials: 'include',
-    })
-      .then((response) => {
-        response.json()
-          .then((response) => {
-            const { data, ok, message } = response;
-            if (ok) {
-              const { name, email, avatarURL, sub } = data
-              localStorage.setItem(USER_PRPFILE, JSON.stringify({ name, email, avatarURL, sub }));
-              sessionStorage.removeItem(REDIRECT_CSRF_KEY)
-              resolve();
-            } else {
-              console.log('error message: ', message)
-              reject();
-            }
-          })
-      })
-      .catch(() => {
-        console.log('error')
-        reject();
-      })
+const signIn = ({ accessToken }) => new Promise((resolve, reject) => {
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  fetch(`${resourceServerOrigin}/user/sign-in`, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+      'CSRF-Token': csrfToken,
+    },
+    referrerPolicy: 'no-referrer',
+    credentials: 'include',
   })
-}
-
+    .then((response) => {
+      response.json().then((response) => {
+        const { data, ok, message } = response;
+        if (ok) {
+          const {
+            name, email, avatarURL, sub, authorizationServer,
+          } = data;
+          localStorage.setItem(
+            USER_PRPFILE,
+            JSON.stringify({
+              name, email, avatarURL, sub, authorizationServer,
+            }),
+          );
+          setCookie('signIn', '1', {
+            domain,
+          });
+          sessionStorage.removeItem(REDIRECT_CSRF_KEY);
+          resolve();
+        } else {
+          console.log('error message: ', message);
+          reject();
+        }
+      });
+    })
+    .catch(() => {
+      console.log('error');
+      reject();
+    });
+});
 
 const form = {
   emailValidation,
   passwordPrimitiveValidation,
-  signIn
-}
+  signIn,
+};
 
 export default form;

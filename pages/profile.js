@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import useAuth from '../src/hooks/useAuth';
-import { _ } from '../src/utils';
 import userIcon from '../src/assets/user.svg';
-
-const { getCookies } = _;
 
 const Container = styled.div`
   display: flex;
@@ -34,19 +30,13 @@ function Profile() {
   const { name, email, avatarURL } = profile;
 
   useEffect(() => {
-    const cookies = getCookies();
-    let userProfile = cookies && cookies['user-profile'];
-    try {
-      userProfile = userProfile ? JSON.parse(userProfile) : undefined;
-      if (userProfile) {
-        setProfile({
-          name: userProfile.name,
-          email: userProfile.email,
-          avatarURL: userProfile.avatarURL,
-        });
-      }
-    } catch (e) {
-      console.log(e);
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    if (userProfile) {
+      setProfile({
+        name: userProfile.name,
+        email: userProfile.email,
+        avatarURL: userProfile.avatarURL,
+      });
     }
   }, []);
 

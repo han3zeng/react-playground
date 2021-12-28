@@ -10,19 +10,46 @@
 //   }
 // }
 
-const getCookies = () => {
+const getCookie = ({ name }) => {
   if (document) {
     const str = document.cookie.split(';');
-    const result = {};
     for (let i = 0; i < str.length; i += 1) {
-      const cur = str[i].split(/=(.+)/);
-      result[cur[0]] = cur[1];
+      const nameValue = str[i].split(/=(.+)/);
+      if (nameValue[0] === name) return nameValue[1];
     }
-    return result;
+    return undefined;
   }
   return undefined;
 };
 
-export {
-  getCookies,
-};
+function setCookie(name, value, options = {}) {
+  const finalOptions = {
+    path: '/',
+    // add other defaults here if necessary
+    ...options,
+  };
+
+  if (finalOptions.expires instanceof Date) {
+    finalOptions.expires = finalOptions.expires.toUTCString();
+  }
+
+  let updatedCookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
+
+  Object.keys(finalOptions).forEach((optionKey) => {
+    updatedCookie += `; ${optionKey}`;
+    const optionValue = finalOptions[optionKey];
+    if (optionValue !== true) {
+      updatedCookie += `=${optionValue}`;
+    }
+  });
+
+  document.cookie = updatedCookie;
+}
+
+function deleteCookie({
+  name,
+}) {
+  setCookie(name, '', { 'max-age': -1 });
+}
+
+export { getCookie, setCookie, deleteCookie };
