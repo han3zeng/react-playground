@@ -10,6 +10,7 @@ export const PATH = {
   signUp: 'sign-up',
   stories: 'stories',
   newStory: 'new-story',
+  story: 'story',
 };
 
 const index = {

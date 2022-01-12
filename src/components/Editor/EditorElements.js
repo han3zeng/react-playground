@@ -83,7 +83,8 @@ const Leaf = props => {
           {props.children}
         </Code>
       )
-    } else if (props.leaf.link) {
+    }
+    if (props.leaf.link) {
       return (
         <A
           href={props.leaf.url}
@@ -94,13 +95,12 @@ const Leaf = props => {
           {props.children}
         </A>
       )
-    } else {
-      return (
-        <>
-          {props.children}
-        </>
-      )
     }
+    return (
+      <>
+        {props.children}
+      </>
+    )
   })();
 
   return (
@@ -110,12 +110,12 @@ const Leaf = props => {
     >
       {Content}
     </Span>
-  )
-}
+  );
+};
 
 export {
   CodeElement,
   DefaultElement,
   Leaf,
-  LinkElement
-}
+  LinkElement,
+};

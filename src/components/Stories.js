@@ -8,7 +8,6 @@ import Error from './Error';
 import { GET_STORIES, DELETE_STORY } from '../api/graphql';
 import { PATH } from '../constants';
 
-
 const LoadingContainer = styled.div`
   display: flex;
   margin-top: 100px;
