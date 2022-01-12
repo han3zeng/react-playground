@@ -1,6 +1,6 @@
 import {
-  gql
-} from "@apollo/client";
+  gql,
+} from '@apollo/client';
 
 export const GET_STORIES = gql`
 query GetStories{
@@ -13,11 +13,11 @@ query GetStories{
     }
   }
 }
-`
+`;
 
-export const getStory = ({ storyId }) => gql`
-query {
-  getStory (storyId: "${storyId}") {
+export const getStory = gql`
+query GetStory($storyId: String!){
+  getStory (storyId: $storyId) {
     id,
     userId,
     storyId,
@@ -25,7 +25,7 @@ query {
     title
   },
 }
-`
+`;
 
 export const DELETE_STORY = gql`
 mutation DeleteStory($storyId: String!) {
@@ -34,7 +34,7 @@ mutation DeleteStory($storyId: String!) {
     ok
   }
 }
-`
+`;
 
 export const CREATE_STORY = gql`
 mutation CreateStory($content: String!, $title: String!) {
@@ -44,4 +44,4 @@ mutation CreateStory($content: String!, $title: String!) {
     ok
   }
 }
-`
+`;

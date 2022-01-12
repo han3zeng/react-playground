@@ -28,32 +28,36 @@ const LoadingContainer = styled.div`
   justify-content: center;
 `;
 
-const serialize = (node) => {
+const serialize = (node, index) => {
   if (Text.isText(node)) {
     const string = escapeHtml(node.text);
-    return <Leaf leaf={node}>{string}</Leaf>;
+    return <Leaf key={index} leaf={node}>{string}</Leaf>;
   }
 
   const children = node.children.map((n) => serialize(n));
 
   switch (node.type) {
     case 'code':
-      return <CodeElement>{children}</CodeElement>;
+      return <CodeElement key={index}>{children}</CodeElement>;
     case 'link':
-      return <LinkElement element={node}>{children}</LinkElement>;
+      return <LinkElement key={index} element={node}>{children}</LinkElement>;
     default:
-      return <DefaultElement>{children}</DefaultElement>;
+      return <DefaultElement key={index}>{children}</DefaultElement>;
   }
 };
 
 function Story() {
   const router = useRouter();
-  const { storyPath } = router.query
+  const { storyPath } = router.query;
   const storyId = storyTool.getStoryIdFromPath({ path: storyPath });
-  const { loading, error, data } = useQuery(getStory({ storyId }));
+  const { loading, error, data } = useQuery(getStory, {
+    variables: {
+      storyId,
+    },
+  });
 
   const { content, title } = data?.getStory || DefaultData;
-  const Content = JSON.parse(content)?.map(serialize);
+  const Content = JSON.parse(content)?.map((node, index) => serialize(node, index));
 
   if (error) return <Error />;
 
